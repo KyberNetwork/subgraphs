@@ -1,8 +1,25 @@
 import { AddNewPool, Deposit, Withdraw } from '../src/types/templates/KyberFairLaunch/KyberFairLaunch'
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
+import { RewardContractAdded } from '../src/types/KyberRewardLocker/KyberRewardLocker'
 import { newMockEvent } from 'matchstick-as'
 
 export const DUMMY_ADDRESS = '0x0000000000000000000000000000000000000001'
+
+export function createRewardContractAddedEvent(
+  rewardContract: Address,
+  token: Address,
+  isAdded: boolean
+): RewardContractAdded {
+  let event = changetype<RewardContractAdded>(newMockEvent())
+
+  event.parameters = []
+
+  event.parameters.push(new ethereum.EventParam('rewardContract', ethereum.Value.fromAddress(rewardContract)))
+  event.parameters.push(new ethereum.EventParam('token', ethereum.Value.fromAddress(token)))
+  event.parameters.push(new ethereum.EventParam('isAdded', ethereum.Value.fromBoolean(isAdded)))
+
+  return event
+}
 
 export function createAddNewPoolEvent(
   address: Address,
