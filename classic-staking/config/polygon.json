@@ -1,5 +1,5 @@
 {
-  "network": "matic",
+  "network": "polygon",
   "rewardLocker": {
     "address": "0x063dd8b5a42aae93a014ce5fabb5b70474667961",
     "startBlock": "16237721"
