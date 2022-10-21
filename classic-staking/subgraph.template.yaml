@@ -1,0 +1,102 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  {{#rewardLocker}}
+  - kind: ethereum
+    name: KyberRewardLocker
+    network: {{network}}
+    source:
+      address: '{{address}}'
+      abi: KyberRewardLocker
+      startBlock: {{startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - KyberFairLaunch
+      abis:
+        - name: KyberRewardLocker
+          file: ./abis/KyberRewardLocker.json
+        - name: KyberFairLaunch
+          file: ./abis/KyberFairLaunch.json
+      eventHandlers:
+        - event: RewardContractAdded(indexed address,indexed address,bool)
+          handler: handleRewardContractAdded
+      file: ./src/mappings/rewardLocker.ts
+  {{/rewardLocker}}
+  {{#rewardLockerV2}}
+  - kind: ethereum/contract
+    name: KyberRewardLockerV2
+    network: {{network}}
+    source:
+      address: '{{address}}'
+      abi: KyberRewardLockerV2
+      startBlock: {{startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - KyberFairLaunch
+      abis:
+        - name: KyberRewardLockerV2
+          file: ./abis/KyberRewardLockerV2.json
+        - name: KyberFairLaunchV2
+          file: ./abis/KyberFairLaunchV2.json
+      eventHandlers:
+        - event: RewardContractAdded(indexed address,indexed address,bool)
+          handler: handleRewardContractAdded
+      file: ./src/mappings/rewardLockerV2.ts
+  {{/rewardLockerV2}}
+
+templates:
+  {{#rewardLocker}}
+  - kind: ethereum/contract
+    name: KyberFairLaunch
+    network: {{network}}
+    source:
+      abi: KyberFairLaunch
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - StakingPosition
+      abis:
+        - name: KyberFairLaunch
+          file: ./abis/KyberFairLaunch.json
+      eventHandlers:
+        - event: Deposit(indexed address,indexed uint256,indexed uint256,uint256)
+          handler: handleDeposit
+        - event: Withdraw(indexed address,indexed uint256,indexed uint256,uint256)
+          handler: handleWithdraw
+        - event: AddNewPool(indexed address,indexed uint32,indexed uint32,uint256[])
+          handler: handleAddNewPool
+      file: ./src/mappings/fairLaunch.ts
+  {{/rewardLocker}}
+  {{#rewardLockerV2}}
+  - kind: ethereum/contract
+    name: KyberFairLaunchV2
+    network: {{network}}
+    source:
+      abi: KyberFairLaunchV2
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - StakingPosition
+      abis:
+        - name: KyberFairLaunchV2
+          file: ./abis/KyberFairLaunchV2.json
+      eventHandlers:
+        - event: Deposit(indexed address,indexed uint256,indexed uint256,uint256)
+          handler: handleDeposit
+        - event: Withdraw(indexed address,indexed uint256,indexed uint256,uint256)
+          handler: handleWithdraw
+        - event: AddNewPool(indexed address,indexed address,uint32,uint32,uint32)
+          handler: handleAddNewPool
+      file: ./src/mappings/fairLaunchV2.ts
+  {{/rewardLockerV2}}
