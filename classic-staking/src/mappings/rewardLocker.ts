@@ -1,7 +1,7 @@
-import { log, BigInt, Bytes } from '@graphprotocol/graph-ts'
+import { BigInt, Bytes } from '@graphprotocol/graph-ts'
 import { KyberFairLaunch } from '../types/schema'
-import { KyberFairLaunch as KyberFairLaunchTemplate } from '../types/templates'
 import { KyberFairLaunch as KyberFairLaunchContract } from '../types/templates/KyberFairLaunch/KyberFairLaunch'
+import { KyberFairLaunch as KyberFairLaunchTemplate } from '../types/templates'
 import { RewardContractAdded } from '../types/KyberRewardLocker/KyberRewardLocker'
 import { ZERO_BI } from './utils'
 

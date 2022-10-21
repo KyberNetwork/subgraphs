@@ -10,7 +10,7 @@
     "create-local": "graph create --node http://localhost:8020/ classic-staking",
     "remove-local": "graph remove --node http://localhost:8020/ classic-staking",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 classic-staking",
-    "prettier": "prettier --write src/mappings/*.ts",
+    "lint": "eslint src/mappings/",
     "test": "graph test"
   },
   "dependencies": {
@@ -22,6 +22,7 @@
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",
     "eslint": "^8.25.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-config-standard-with-typescript": "^23.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.3.0",

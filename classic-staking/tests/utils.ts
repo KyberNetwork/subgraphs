@@ -1,6 +1,6 @@
-import { newMockEvent } from 'matchstick-as'
-import { ethereum, Address, BigInt } from '@graphprotocol/graph-ts'
 import { AddNewPool, Deposit, Withdraw } from '../src/types/templates/KyberFairLaunch/KyberFairLaunch'
+import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
+import { newMockEvent } from 'matchstick-as'
 
 export const DUMMY_ADDRESS = '0x0000000000000000000000000000000000000001'
 
@@ -14,7 +14,7 @@ export function createAddNewPoolEvent(
   let event = changetype<AddNewPool>(newMockEvent())
 
   event.address = address
-  event.parameters = new Array()
+  event.parameters = []
 
   event.parameters.push(new ethereum.EventParam('stakeToken', ethereum.Value.fromAddress(stakeToken)))
   event.parameters.push(new ethereum.EventParam('startBlock', ethereum.Value.fromI32(startBlock)))
@@ -34,7 +34,7 @@ export function createDepositEvent(
   let event = changetype<Deposit>(newMockEvent())
 
   event.address = address
-  event.parameters = new Array()
+  event.parameters = []
 
   event.parameters.push(new ethereum.EventParam('user', ethereum.Value.fromAddress(user)))
   event.parameters.push(new ethereum.EventParam('pid', ethereum.Value.fromUnsignedBigInt(pid)))
@@ -54,7 +54,7 @@ export function createWithdrawEvent(
   let event = changetype<Withdraw>(newMockEvent())
 
   event.address = address
-  event.parameters = new Array()
+  event.parameters = []
 
   event.parameters.push(new ethereum.EventParam('user', ethereum.Value.fromAddress(user)))
   event.parameters.push(new ethereum.EventParam('pid', ethereum.Value.fromUnsignedBigInt(pid)))

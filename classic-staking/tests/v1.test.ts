@@ -1,8 +1,8 @@
-import { assert, describe, test, beforeAll, afterAll } from 'matchstick-as/assembly/index'
-import { KyberFairLaunch } from '../src/types/schema'
-import { handleAddNewPool, handleDeposit, handleWithdraw } from '../src/mappings/fairLaunch'
-import { store, ethereum, Address, BigInt } from '@graphprotocol/graph-ts'
+import { Address, BigInt, store } from '@graphprotocol/graph-ts'
 import { DUMMY_ADDRESS, createAddNewPoolEvent, createDepositEvent, createWithdrawEvent } from './utils'
+import { afterAll, assert, beforeAll, describe, test } from 'matchstick-as/assembly/index'
+import { handleAddNewPool, handleDeposit, handleWithdraw } from '../src/mappings/fairLaunch'
+import { KyberFairLaunch } from '../src/types/schema'
 
 describe('handleAddNewPool()', () => {
   beforeAll(() => {

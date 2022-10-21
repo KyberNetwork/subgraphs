@@ -1,6 +1,6 @@
-import { log, Address, BigInt, Bytes } from '@graphprotocol/graph-ts'
-import { StakingPosition, KyberFairLaunch } from '../types/schema'
 import { AddNewPool, Deposit, Withdraw } from '../types/templates/KyberFairLaunchV2/KyberFairLaunchV2'
+import { Address, BigInt, Bytes, log } from '@graphprotocol/graph-ts'
+import { KyberFairLaunch, StakingPosition } from '../types/schema'
 import { ZERO_BI } from './utils'
 
 export function handleDeposit(event: Deposit): void {
