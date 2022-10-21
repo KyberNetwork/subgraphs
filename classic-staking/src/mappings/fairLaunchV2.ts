@@ -28,7 +28,7 @@ export function handleAddNewPool(event: AddNewPool): void {
 }
 
 function createOrLoadStakingPosition(user: Bytes, fairLaunchAddress: Address, poolID: BigInt): StakingPosition {
-  let id = `${user.toHex()}-${fairLaunchAddress}-${poolID}`
+  let id = `${user.toHex()}-${fairLaunchAddress.toHex()}-${poolID}`
 
   let position = StakingPosition.load(id)
   if (position === null) {
