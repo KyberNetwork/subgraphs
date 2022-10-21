@@ -1,0 +1,7 @@
+{
+  "network": "bttc",
+  "rewardLockerV2": {
+    "address": "0xe79bfc312328ab75272785dbf5bd871b253709a5",
+    "startBlock": "5450119"
+  }
+}

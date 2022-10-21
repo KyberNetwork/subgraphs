@@ -1,0 +1,13 @@
+type KyberFairLaunch @entity {
+  id: ID!
+  stakeTokens: [Bytes!]!
+}
+
+type StakingPosition @entity {
+  id: ID! # user-fairLaunch-poolID
+  user: Bytes!
+  fairLaunch: KyberFairLaunch!
+  poolID: Int!
+  stakeToken: Bytes!
+  amount: BigInt!
+}

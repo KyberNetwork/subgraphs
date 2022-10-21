@@ -1,0 +1,34 @@
+{
+  "name": "data-subgraph",
+  "license": "UNLICENSED",
+  "scripts": {
+    "prepare": "mustache config/${NETWORK}.json subgraph.template.yaml > subgraph.yaml",
+    "codegen": "graph codegen --output-dir src/types/",
+    "build": "graph build",
+    "create-subgraph": "graph create kybernetwork/kyber-classic-staking-${NETWORK} --node https://${NETWORK}-graph.kyberengineering.io/admin",
+    "deploy-subgraph": "graph deploy kybernetwork/kyber-classic-staking-${NETWORK} --node https://${NETWORK}-graph.kyberengineering.io/admin --ipfs https://${NETWORK}-graph.kyberengineering.io/ipfs",
+    "create-local": "graph create --node http://localhost:8020/ classic-staking",
+    "remove-local": "graph remove --node http://localhost:8020/ classic-staking",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 classic-staking",
+    "prettier": "prettier --write src/mappings/*.ts",
+    "test": "graph test"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.35.0",
+    "@graphprotocol/graph-ts": "0.28.1",
+    "mustache": "^4.2.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
+    "eslint": "^8.25.0",
+    "eslint-config-standard-with-typescript": "^23.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.3.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "matchstick-as": "0.5.0",
+    "prettier": "^2.7.1",
+    "standard": "^17.0.0",
+    "typescript": "^4.8.4"
+  }
+}
