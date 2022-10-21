@@ -1,5 +1,6 @@
 build/
 node_modules/
 src/types/
+tests/.bin/
 .DS_STORE
 subgraph.yaml
