@@ -1,0 +1,4 @@
+type KncStaker @entity {
+  id: ID!           # User address
+  amount: BigInt!   # How many KNC token this user staked in Kyber DAO
+}
