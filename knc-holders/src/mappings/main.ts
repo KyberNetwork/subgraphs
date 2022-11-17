@@ -1,6 +1,6 @@
 import { Address } from '@graphprotocol/graph-ts'
 import { KncHolder } from '../types/schema'
-import { Transfer } from '../types/Knc/Erc20'
+import { Transfer } from '../types/KNC/Erc20'
 import { ZERO_BI } from './utils'
 
 export function handleTransfer(event: Transfer): void {

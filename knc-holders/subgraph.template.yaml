@@ -3,12 +3,12 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: Knc
-    network: {{network}}
+    name: KNC
+    network: { { network } }
     source:
       address: '{{kncAddress}}'
       abi: Erc20
-      startBlock: {{startBlock}}
+      startBlock: { { startBlock } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6

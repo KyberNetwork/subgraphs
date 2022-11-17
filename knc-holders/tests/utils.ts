@@ -1,5 +1,5 @@
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
-import { Transfer } from '../src/types/Knc/Erc20'
+import { Transfer } from '../src/types/KNC/Erc20'
 import { newMockEvent } from 'matchstick-as'
 
 export function createTransferEvent(from: Address, to: Address, amount: BigInt): Transfer {
