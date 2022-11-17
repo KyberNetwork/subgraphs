@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: KNC
-    network: { { network } }
+    network: {{network}}
     source:
       address: '{{kncAddress}}'
       abi: Erc20
-      startBlock: { { startBlock } }
+      startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
