@@ -2,7 +2,7 @@
   "name": "data-subgraph",
   "license": "UNLICENSED",
   "scripts": {
-    "prepare": "mustache config/${NETWORK}.json subgraph.template.yaml > subgraph.yaml",
+    "prepare": "mustache config/${NETWORK:-ethereum}.json subgraph.template.yaml > subgraph.yaml",
     "codegen": "graph codegen --output-dir src/types/",
     "build": "graph build",
     "create-subgraph": "graph create kybernetwork/kyber-classic-staking-${NETWORK} --node https://${NETWORK}-graph.kyberengineering.io/admin",
@@ -11,7 +11,8 @@
     "remove-local": "graph remove --node http://localhost:8020/ classic-staking",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 classic-staking",
     "lint": "eslint src/mappings/",
-    "test": "graph test"
+    "test": "graph test",
+    "coverage": "graph test -c"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.35.0",

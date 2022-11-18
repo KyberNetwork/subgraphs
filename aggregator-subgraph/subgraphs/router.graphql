@@ -1,0 +1,46 @@
+type RouterExchange @entity {
+  id: ID! # txn hash + log index
+  router: Bytes!
+  pair: Bytes!
+  token: Bytes!
+  tokenIn: Bytes!
+  tokenOut: Bytes!
+  amount: BigDecimal!
+  userAddress: Bytes!
+  time: BigInt
+  blockNumber: BigInt
+  tx: Bytes!
+}
+
+type AggregationExecutor @entity {
+  id: ID!
+}
+
+type ExecutorExchange @entity {
+  id: ID! # txn hash + log index
+  executor: Bytes!
+  pair: Bytes!
+  token: Bytes!
+  amount: BigDecimal!
+  userAddress: Bytes!
+  time: BigInt
+  blockNumber: BigInt
+  tx: Bytes!
+}
+
+type RouterSwapped @entity {
+  id: ID! # txn hash + log index
+  router: Bytes!
+  pair: String!
+  tokenIn: Bytes!
+  amountIn: BigDecimal!
+  tokenOut: Bytes!
+  amountOut: BigDecimal!
+  userAddress: Bytes!
+  time: BigInt
+  blockNumber: BigInt
+  tx: Bytes!
+  clientData: Bytes
+  clientDataStr: String
+  source: String
+}

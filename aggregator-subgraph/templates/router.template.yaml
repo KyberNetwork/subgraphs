@@ -1,0 +1,102 @@
+specVersion: 0.0.2
+description: Router
+repository: https://github.com/kybernetwork/aggregator-subgraph
+schema:
+  file: ./router.graphql
+dataSources:
+  {{#router}}
+  - kind: ethereum/contract
+    name: Router
+    network: {{network}}
+    source:
+      address: '{{router.address}}'
+      abi: Router
+      startBlock: {{router.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ../src/router/router.ts
+      entities:
+        - RouterExchange
+        - RouterSwapped
+      abis:
+        - name: Router
+          file: ../abis/AggregationRouter.json
+      eventHandlers:
+        - event: Exchange(address,uint256,address)
+          handler: handleExchange
+        - event: Swapped(address,address,address,address,uint256,uint256)
+          handler: handleSwapped
+  {{/router}}
+  {{#routerV2}}
+  - kind: ethereum/contract
+    name: RouterV2
+    network: {{network}}
+    source:
+      address: '{{routerV2.address}}'
+      abi: RouterV2
+      startBlock: {{routerV2.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ../src/router/router.ts
+      entities:
+        - RouterExchange
+        - RouterSwapped
+      abis:
+        - name: RouterV2
+          file: ../abis/AggregationRouterV2.json
+      eventHandlers:
+        - event: Exchange(address,uint256,address)
+          handler: handleExchange
+        - event: Swapped(address,address,address,address,uint256,uint256)
+          handler: handleSwapped
+  {{/routerV2}}
+  {{#routerV3}}
+  - kind: ethereum/contract
+    name: RouterV3
+    network: {{network}}
+    source:
+      address: '{{routerV3.address}}'
+      abi: RouterV3
+      startBlock: {{routerV3.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ../src/router/router.ts
+      entities:
+        - RouterExchange
+        - RouterSwapped
+      abis:
+        - name: RouterV3
+          file: ../abis/AggregationRouterV3.json
+      eventHandlers:
+        - event: Exchange(address,uint256,address)
+          handler: handleExchange
+        - event: Swapped(address,address,address,address,uint256,uint256)
+          handler: handleSwapped
+        - event: ClientData(bytes)
+          handler: handleClientData
+  {{/routerV3}}
+templates:
+  - kind: ethereum/contract
+    name: Executor
+    network: {{network}}
+    source:
+      abi: Executor
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ../src/router/executor.ts
+      entities:
+        - ExecutorExchange
+      abis:
+        - name: Executor
+          file: ../abis/AggregationExecutor.json
+      eventHandlers:
+        - event: Exchange(address,uint256,address)
+          handler: handleExecutorExchange

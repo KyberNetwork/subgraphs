@@ -1,0 +1,68 @@
+name: 'Release'
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version'
+        type: string
+        required: true
+      subgraph_name:
+        description: 'Subgraph name to deploy'
+        type: string
+        required: true
+      chain:
+        description: 'chain to deploy subgraph'
+        type: string
+        required: true
+
+jobs:
+  prepare:
+    runs-on: [self-hosted]
+    outputs:
+      version_tag: ${{ steps.version_tag.outputs.value }}
+      build_date: ${{ steps.build_date.outputs.value }}
+    steps:
+      - name: Format version tag
+        shell: bash
+        id: version_tag
+        env:
+          INPUT_TAG: ${{ github.event.inputs.version }}
+          SUBGRAPH_NAME: ${{ github.event.inputs.subgraph_name }}
+          NETWORK: ${{ github.event.inputs.chain }}
+        run: |
+          TAG=${INPUT_TAG#v}
+          echo "::set-output name=value::v$TAG"
+      - name: Build date
+        shell: bash
+        id: build_date
+        run: echo "::set-output name=value::$(date +%FT%T%z)"
+
+  release:
+    needs:
+      - prepare
+    runs-on: [self-hosted]
+    env:
+      VERSION_TAG: ${{ needs.prepare.outputs.version_tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      - name: Create tag
+        run: |
+          git tag -d "$VERSION_TAG" 2> /dev/null || echo "Release tag '$VERSION_TAG' does NOT exist"
+          git tag --annotate --message "solana-stats-aggregator-stats $VERSION_TAG" "$VERSION_TAG"
+          git push origin "refs/tags/$VERSION_TAG"
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ env.VERSION_TAG }}
+          prerelease: false
+          name: "Solana Aggregator Stats ${{ env.VERSION_TAG }}"

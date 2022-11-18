@@ -4,6 +4,8 @@ import { afterAll, assert, beforeAll, describe, test } from 'matchstick-as/assem
 import { handleAddNewPool, handleDeposit, handleWithdraw } from '../src/mappings/fairLaunch'
 import { KyberFairLaunch } from '../src/types/schema'
 
+export { handleAddNewPool, handleDeposit, handleWithdraw }
+
 describe('handleAddNewPool()', () => {
   beforeAll(() => {
     let fairLaunch = new KyberFairLaunch(DUMMY_ADDRESS)
