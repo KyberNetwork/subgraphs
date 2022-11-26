@@ -1,0 +1,14 @@
+{
+  "polygon": {
+    "KyberSwapElasticLM": {
+      "address": "0x5C503D4b7DE0633f031229bbAA6A5e4A31cc35d8",
+      "startBlock": 31653670
+    }
+  },
+  "avalanche": {
+    "KyberSwapElasticLM": {
+      "address": "0x5C503D4b7DE0633f031229bbAA6A5e4A31cc35d8",
+      "startBlock": 18534115
+    }
+  }
+}

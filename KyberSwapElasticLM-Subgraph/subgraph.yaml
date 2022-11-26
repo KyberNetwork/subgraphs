@@ -1,0 +1,24 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: KyberSwapElasticLM
+    network: polygon
+    source:
+      abi: KyberSwapElasticLM
+      address: "0x5C503D4b7DE0633f031229bbAA6A5e4A31cc35d8"
+      startBlock: 31653670
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - EmergencyWithdraw
+      abis:
+        - name: KyberSwapElasticLM
+          file: ./abis/KyberSwapElasticLM.json
+      eventHandlers:
+        - event: EmergencyWithdraw(address,indexed uint256)
+          handler: handleEmergencyWithdraw
+      file: ./src/mapping.ts

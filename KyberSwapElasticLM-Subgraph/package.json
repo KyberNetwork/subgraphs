@@ -1,0 +1,19 @@
+{
+  "name": "KyberSwapElasticLM",
+  "license": "UNLICENSED",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ KyberNetwork/KyberSwapElasticLM-${NETWORK}",
+    "create-local": "graph create --node http://localhost:8020/ --network ${NETWORK} KyberNetwork/KyberSwapElasticLM-${NETWORK}",
+    "remove-local": "graph remove --node http://localhost:8020/ --network ${NETWORK} KyberNetwork/KyberSwapElasticLM-${NETWORK}",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --network ${NETWORK} --ipfs http://localhost:5002 KyberNetwork/KyberSwapElasticLM-${NETWORK}",
+    "create-kyber": "graph create --node https://${NETWORK}-graph.kyberengineering.io/admin --network ${NETWORK} KyberNetwork/KyberSwapElasticLM-${NETWORK}",
+    "remove-kyber": "graph remove --node https://${NETWORK}-graph.kyberengineering.io/admin --network ${NETWORK} KyberNetwork/KyberSwapElasticLM-${NETWORK}",
+    "deploy-kyber": "graph deploy --node https://${NETWORK}-graph.kyberengineering.io/admin --network ${NETWORK} --ipfs https://${NETWORK}-graph.kyberengineering.io/ipfs KyberNetwork/KyberSwapElasticLM-${NETWORK}"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.28.3",
+    "@graphprotocol/graph-ts": "0.26.0"
+  }
+}
