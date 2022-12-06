@@ -294,7 +294,7 @@ export function handleWithdraw(event: Withdraw): void {
 }
 
 export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
-  handleWithdraw(event as Withdraw)
+  // handleWithdraw(event as Withdraw)
 
   // TODO: remove joinedPositions when EmergencyWithdraw
   // let farm = Farm.load(event.address.toHexString())

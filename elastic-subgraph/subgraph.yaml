@@ -6,7 +6,7 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: Factory
-    network: mainnet
+    network: ethereum
     source:
       address: '0x5f1dddbf348ac2fbe22a163e30f99f9ece3dd50a'
       abi: Factory
@@ -14,7 +14,7 @@ dataSources:
       # startBlock: 10194215
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/factory.ts
       entities:
@@ -36,14 +36,14 @@ dataSources:
           handler: handlePoolCreated
   - kind: ethereum/contract
     name: AntiSnipAttackPositionManager
-    network: mainnet
+    network: ethereum
     source:
       address: '0x2b1c7b41f6a8f2b2bc45c3233a5d5fb3cd6dc9a8'
       abi: AntiSnipAttackPositionManager
       startBlock: 14932476
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/position-manager.ts
       entities:
@@ -71,14 +71,14 @@ dataSources:
           handler: handleTransfer
   - kind: ethereum/contract
     name: KyberRewardLocker
-    network: mainnet
+    network: ethereum
     source:
       address: '0x10f6fb1a8b495a972bdce5bf86f2969f64359b00'
       abi: KyberRewardLocker
       startBlock: 15325778  # contract creation block
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/farm.ts
       entities:   # defines which entities are written to stores
@@ -102,12 +102,12 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: Pool
-    network: mainnet
+    network: ethereum
     source:
       abi: Pool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/core.ts
       entities:
@@ -136,12 +136,12 @@ templates:
 
   - kind: ethereum/contract
     name: KyberFairLaunch
-    network: mainnet
+    network: ethereum
     source:
       abi: KyberFairLaunch
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/farm.ts
       entities:

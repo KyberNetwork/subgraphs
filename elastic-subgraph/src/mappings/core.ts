@@ -1,8 +1,8 @@
 /* eslint-disable prefer-const */
-import { Bundle, Burn, Factory, Mint, Pool, Swap, Tick, Token, ContractEvent } from '../types/schema'
+import { Bundle, Burn, Factory, Mint, Pool, Swap, Tick, Token, ContractEvent, Position, PositionFee } from '../types/schema'
 import { Pool as PoolABI } from '../types/Factory/Pool'
 import { ERC20 } from '../types/templates/Pool/ERC20'
-import { BigDecimal, BigInt, ethereum, log, Address } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt, ethereum, log, Address, Bytes } from '@graphprotocol/graph-ts'
 import {
   Burn as BurnEvent,
   Flash as FlashEvent,
@@ -25,16 +25,16 @@ import {
 import { createTick, feeTierToTickSpacing } from '../utils/tick'
 
 export function handleInitialize(event: Initialize): void {
-  let pool = Pool.load(event.address.toHexString())
+  let pool = Pool.load(event.address.toHexString())!
   pool.sqrtPrice = event.params.sqrtP
   pool.tick = BigInt.fromI32(event.params.tick)
 
   // update token prices
-  let token0 = Token.load(pool.token0)
-  let token1 = Token.load(pool.token1)
+  let token0 = Token.load(pool.token0)!
+  let token1 = Token.load(pool.token1)!
 
   // update ETH price now that prices could have changed
-  let bundle = Bundle.load('1')
+  let bundle = Bundle.load('1')!
   bundle.ethPriceUSD = getEthPriceInUSD()
   bundle.save()
 
@@ -59,15 +59,15 @@ export function handleInitialize(event: Initialize): void {
 }
 
 export function handleMint(event: MintEvent): void {
-  let bundle = Bundle.load('1')
+  let bundle = Bundle.load('1')!
   let poolAddress = event.address.toHexString()
-  let pool = Pool.load(poolAddress)
+  let pool = Pool.load(poolAddress)!
   let poolContract = PoolABI.bind(event.address)
 
-  let factory = Factory.load(FACTORY_ADDRESS)
+  let factory = Factory.load(FACTORY_ADDRESS)!
 
-  let token0 = Token.load(pool.token0)
-  let token1 = Token.load(pool.token1)
+  let token0 = Token.load(pool.token0)!
+  let token1 = Token.load(pool.token1)!
   let amount0 = convertTokenToDecimal(event.params.qty0, token0.decimals)
   let amount1 = convertTokenToDecimal(event.params.qty1, token1.decimals)
 
@@ -196,18 +196,18 @@ export function handleMint(event: MintEvent): void {
   mint.save()
 
   // Update inner tick vars and save the ticks
-  updateTickFeeVarsAndSave(lowerTick!, event)
-  updateTickFeeVarsAndSave(upperTick!, event)
+  updateTickFeeVarsAndSave(lowerTick, event)
+  updateTickFeeVarsAndSave(upperTick, event)
 }
 
 export function handleBurn(event: BurnEvent): void {
-  let bundle = Bundle.load('1')
+  let bundle = Bundle.load('1')!
   let poolAddress = event.address.toHexString()
-  let pool = Pool.load(poolAddress)
-  let factory = Factory.load(FACTORY_ADDRESS)
+  let pool = Pool.load(poolAddress)!
+  let factory = Factory.load(FACTORY_ADDRESS)!
 
-  let token0 = Token.load(pool.token0)
-  let token1 = Token.load(pool.token1)
+  let token0 = Token.load(pool.token0)!
+  let token1 = Token.load(pool.token1)!
   let amount0 = convertTokenToDecimal(event.params.qty0, token0.decimals)
   let amount1 = convertTokenToDecimal(event.params.qty1, token1.decimals)
 
@@ -284,8 +284,8 @@ export function handleBurn(event: BurnEvent): void {
   // tick entities
   let lowerTickId = poolAddress + '#' + BigInt.fromI32(event.params.tickLower).toString()
   let upperTickId = poolAddress + '#' + BigInt.fromI32(event.params.tickUpper).toString()
-  let lowerTick = Tick.load(lowerTickId)
-  let upperTick = Tick.load(upperTickId)
+  let lowerTick = Tick.load(lowerTickId)!
+  let upperTick = Tick.load(upperTickId)!
   let amount = event.params.qty
   lowerTick.liquidityGross = lowerTick.liquidityGross.minus(amount)
   lowerTick.liquidityNet = lowerTick.liquidityNet.minus(amount)
@@ -299,8 +299,8 @@ export function handleBurn(event: BurnEvent): void {
   updateTokenDayData(token1 as Token, event)
   updateTokenHourData(token0 as Token, event)
   updateTokenHourData(token1 as Token, event)
-  updateTickFeeVarsAndSave(lowerTick!, event)
-  updateTickFeeVarsAndSave(upperTick!, event)
+  updateTickFeeVarsAndSave(lowerTick, event)
+  updateTickFeeVarsAndSave(upperTick, event)
 
   // note event info
   let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
@@ -323,13 +323,13 @@ export function handleBurn(event: BurnEvent): void {
 }
 
 export function handleBurnRTokens(event: BurnRTokensEvent): void {
-  let bundle = Bundle.load('1')
+  let bundle = Bundle.load('1')!
   let poolAddress = event.address.toHexString()
-  let pool = Pool.load(poolAddress)
-  let factory = Factory.load(FACTORY_ADDRESS)
+  let pool = Pool.load(poolAddress)!
+  let factory = Factory.load(FACTORY_ADDRESS)!
 
-  let token0 = Token.load(pool.token0)
-  let token1 = Token.load(pool.token1)
+  let token0 = Token.load(pool.token0)!
+  let token1 = Token.load(pool.token1)!
   let amount0 = convertTokenToDecimal(event.params.qty0, token0.decimals)
   let amount1 = convertTokenToDecimal(event.params.qty1, token1.decimals)
 
@@ -429,15 +429,47 @@ export function handleBurnRTokens(event: BurnRTokensEvent): void {
   pool.save()
   factory.save()
   // burn.save()
+  handlePositionFeeCollected(event)
+}
+
+function handlePositionFeeCollected(event: BurnRTokensEvent): void {
+  // let poolAddress = event.address.toHexString()
+  // let amount0 = convertTokenToDecimal(event.params.qty0, BigInt.fromI32(6))
+  // let amount1 = convertTokenToDecimal(event.params.qty1, BigInt.fromI32(6))
+  // log.debug(event.transaction.hash.toHexString(),[])
+  // if (event.transaction.hash.toHexString().toLowerCase() == "0x7607f7b24f8cf90361f73c626afc56bd198f126ec416c1110654712fcbfa6ff0") {
+  //   log.debug(event.transaction.input.toHexString(),[])
+  // }
+  const positionID = DecodeCollectEvent(event.transaction.input)
+  let position = Position.load(positionID.toString())
+  if (position == null) {
+    return
+  }
+  let positionFee = PositionFee.load(positionID.toString())
+  if (positionFee === null) {
+    positionFee = new PositionFee(positionID.toString())
+    
+    positionFee.collectedFeesToken0 = new BigDecimal(event.params.qty0)
+    positionFee.collectedFeesToken1 = new BigDecimal(event.params.qty1)
+    positionFee.token0 = position.token0
+    positionFee.token1 = position.token1
+    positionFee.pool = position.pool
+    //TODO 
+    // positionFee.collectedFeesUSD = BigDecimal.fromString('0')
+  }else {
+    positionFee.collectedFeesToken0 = positionFee.collectedFeesToken0.plus(event.params.qty0.toBigDecimal())
+    positionFee.collectedFeesToken0 = positionFee.collectedFeesToken1.plus(event.params.qty1.toBigDecimal())
+  } 
+  positionFee.save()
 }
 
 export function handleSwap(event: SwapEvent): void {
-  let bundle = Bundle.load('1')
-  let factory = Factory.load(FACTORY_ADDRESS)
-  let pool = Pool.load(event.address.toHexString())
+  let bundle = Bundle.load('1')!
+  let factory = Factory.load(FACTORY_ADDRESS)!
+  let pool = Pool.load(event.address.toHexString())!
 
-  let token0 = Token.load(pool.token0)
-  let token1 = Token.load(pool.token1)
+  let token0 = Token.load(pool.token0)!
+  let token1 = Token.load(pool.token1)!
 
   let oldTick = pool.tick!
 
@@ -477,7 +509,6 @@ export function handleSwap(event: SwapEvent): void {
   factory.untrackedVolumeUSD = factory.untrackedVolumeUSD.plus(amountTotalUSDUntracked)
   factory.totalFeesETH = factory.totalFeesETH.plus(feesETH)
   factory.totalFeesUSD = factory.totalFeesUSD.plus(feesUSD)
-
   // reset aggregate tvl before individual pool tvl updates
   let currentPoolTvlETH = pool.totalValueLockedETH
   factory.totalValueLockedETH = factory.totalValueLockedETH.minus(currentPoolTvlETH)
@@ -515,6 +546,7 @@ export function handleSwap(event: SwapEvent): void {
 
   // updated pool ratess
   let prices = sqrtPriceX96ToTokenPrices(pool.sqrtPrice, token0 as Token, token1 as Token)
+
   pool.token0Price = prices[0]
   pool.token1Price = prices[1]
   pool.save()
@@ -685,7 +717,7 @@ export function handleSwap(event: SwapEvent): void {
 
 export function handleFlash(event: FlashEvent): void {
   // update fee growth
-  let pool = Pool.load(event.address.toHexString())
+  let pool = Pool.load(event.address.toHexString())!
 
   syncFeeGrowth(pool, true)
   
@@ -710,12 +742,12 @@ function updateTickFeeVarsAndSave(tick: Tick, event: ethereum.Event): void {
 
   tick.save()
 
-  updateTickDayData(tick!, event)
+  updateTickDayData(tick, event)
 }
 
 function loadTickUpdateFeeVarsAndSave(tickId: i32, event: ethereum.Event): void {
   let poolAddress = event.address
-  let pool = Pool.load(event.address.toHexString())
+  let pool = Pool.load(event.address.toHexString())!
 
   let tick = Tick.load(
     poolAddress
@@ -728,7 +760,7 @@ function loadTickUpdateFeeVarsAndSave(tickId: i32, event: ethereum.Event): void 
     tick.secondsPerLiquidityOutside = pool.secondsPerLiquidityGlobal.minus(tick.secondsPerLiquidityOutside)
     tick.save()
 
-    updateTickDayData(tick!, event)
+    updateTickDayData(tick, event)
   }
 }
 
@@ -771,4 +803,24 @@ function syncFeeGrowth(pool: Pool | null, updateReinvestLLast: boolean): void {
   pool.totalSupply = totalSupply
 
   pool.save()
+}
+
+export function DecodeCollectEvent(txBytes: Bytes): BigInt{
+  //note: tx comes along with collect event is smt like: multicall-wrapper > remove-tx + collect-tx
+  const multicallFunctionInput = Bytes.fromUint8Array(txBytes.subarray(4));
+  const decodedMulticall = ethereum.decode(
+    'bytes[]',
+    multicallFunctionInput
+  );
+  if (decodedMulticall == null){
+    throw Error('Decode collect tx failed: multicall step')
+  }
+  let collectByteData = decodedMulticall.toBytesArray()[1]
+  const collectFunctionInput = Bytes.fromUint8Array(collectByteData.subarray(4))
+  let decodedCollect = ethereum.decode('(uint,uint,uint,uint)', collectFunctionInput)
+  if (decodedCollect == null) {
+    throw Error('Decode collect tx failed: collect step')
+  }
+  const t = decodedCollect.toTuple();
+  return t[0].toBigInt()
 }

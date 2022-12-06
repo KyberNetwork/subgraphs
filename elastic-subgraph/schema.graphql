@@ -224,6 +224,25 @@ type Position @entity {
   feeGrowthInsideLast: BigInt!
 }
 
+
+type PositionFee @entity {
+  # NFT token id
+  id: ID!
+  # all time fees collected token0
+  collectedFeesToken0: BigDecimal!
+  # all time fees collected token1
+  collectedFeesToken1: BigDecimal!
+  # all time fees collected derived USD
+  collectedFeesUSD: BigDecimal
+  # pool position is within
+  pool: Pool!
+  # allow indexing by tokens
+  token0: Token!
+  # allow indexing by tokens
+  token1: Token!
+}
+
+
 type PositionSnapshot @entity {
   # <NFT token id>#<block number>
   id: ID!
@@ -253,7 +272,7 @@ type Transaction @entity {
   # timestamp txn was confirmed
   timestamp: BigInt!
   # gas used during txn execution
-  gasUsed: BigInt!
+  # gasUsed: BigInt!
   gasPrice: BigInt!
   # derived values
   mints: [Mint!]! @derivedFrom(field: "transaction")
