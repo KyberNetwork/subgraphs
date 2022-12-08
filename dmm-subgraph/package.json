@@ -11,6 +11,7 @@
     "create-subgraph": "graph create kybernetwork/kyberswap-exchange-${NETWORK} --node https://${NETWORK}-graph.kyberengineering.io/admin",
     "deploy-subgraph": "graph deploy kybernetwork/kyberswap-exchange-${NETWORK} --debug --ipfs https://${NETWORK}-graph.kyberengineering.io/ipfs --node https://${NETWORK}-graph.kyberengineering.io/admin",
     "create-local": "graph create dynamic-amm/dynamic-amm --node http://127.0.0.1:8020",
+    "remove-local": "graph remove dynamic-amm/dynamic-amm --node http://127.0.0.1:8020",
     "deploy-local": "graph deploy dynamic-amm/dynamic-amm --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
     "watch-local": "graph deploy dynamic-amm/dynamic-amm --watch --debug --node http://127.0.0.1:8020/ --ipfs http://localhost:5001",
     "prettier": "./node_modules/.bin/prettier --write src/mappings/*",

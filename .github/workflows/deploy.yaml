@@ -1,14 +1,18 @@
-name: 'Release'
+name: 'Deploy Subgraph'
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version'
+        description: 'Deploy a subgraph'
         type: string
         required: true
       subgraph_name:
         description: 'Subgraph name to deploy'
+        type: string
+        required: true
+      node: 
+        description: 'GraphNode admin endpoint'
         type: string
         required: true
       chain:
