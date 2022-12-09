@@ -1,6 +1,11 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 description: KyberSwap is DeFi’s first Dynamic Market Maker; a decentralized exchange protocol that provides frictionless crypto liquidity with extremely high flexibility and capital efficiency. KyberSwap is the first major protocol in Kyber’s liquidity hub.
 repository: https://github.com/KyberNetwork/promm-subgraph
+features:
+  - grafting
+graft:
+  base: QmciwdNZ59y1f7k4AjRPWLmCaCw6xjdx7RfP7gYcMfzvKB # Subgraph ID of base subgraph
+  block: 16138000 # Block number
 schema:
   file: ./schema.graphql
 dataSources:
@@ -14,7 +19,7 @@ dataSources:
       # startBlock: 10194215
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/factory.ts
       entities:
@@ -43,7 +48,7 @@ dataSources:
       startBlock: 14932476
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/position-manager.ts
       entities:
@@ -78,7 +83,7 @@ dataSources:
       startBlock: 15325778  # contract creation block
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/farm.ts
       entities:   # defines which entities are written to stores
@@ -107,7 +112,7 @@ templates:
       abi: Pool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/core.ts
       entities:
@@ -141,7 +146,7 @@ templates:
       abi: KyberFairLaunch
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/farm.ts
       entities:
@@ -174,3 +179,5 @@ templates:
           handler: handleWithdraw
         - event: EmergencyWithdraw(address,indexed uint256)
           handler: handleEmergencyWithdraw
+        - event: Harvest(address,address,indexed uint256)
+          handler: handleHarvest

@@ -1,6 +1,9 @@
 specVersion: 0.0.2
 description: DMM is a decentralized protocol for automated token exchange on Ethereum.
 repository: https://github.com/dynamic-amm/dmm-subgraph
+graft:
+  base: QmciwdNZ59y1f7k4AjRPWLmCaCw6xjdx7RfP7gYcMfzvKB # Subgraph ID of base subgraph
+  block: 16138000 # Block number
 schema:
   file: ./schema.graphql
 dataSources:
