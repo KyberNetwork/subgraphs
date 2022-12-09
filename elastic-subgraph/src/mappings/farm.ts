@@ -8,12 +8,13 @@ import {
   SyncLiq,
   Withdraw,
   EmergencyWithdraw,
-  Deposit
+  Deposit,
+  Harvest
 } from '../types/templates/KyberFairLaunch/KyberFairLaunch'
-import { Farm, JoinedPosition, FarmingPool, Token, DepositedPosition, RewardToken,ContractEvent } from '../types/schema'
+import { Farm, JoinedPosition, FarmingPool, Token, DepositedPosition, RewardToken,ContractEvent, HarvestEventGroup } from '../types/schema'
 import { KyberFairLaunch as KyberFairLaunchTemplate } from '../types/templates'
 import { ZERO_BI, ADDRESS_ZERO, WETH_ADDRESS, ZERO_BD } from '../utils/constants'
-import { BigInt, log, Address, store } from '@graphprotocol/graph-ts'
+import { BigInt, log, Address, store, Bytes, ByteArray, ethereum } from '@graphprotocol/graph-ts'
 import { fetchTokenSymbol, fetchTokenName, fetchTokenTotalSupply, fetchTokenDecimals } from '../utils/token'
 
 function getToken(item: Address): string {
@@ -304,4 +305,74 @@ export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
   //     store.remove('JoinedPosition', pool.toString() + '_' + event.params.nftId.toString())
   //   }
   // })
+}
+export function handleHarvest(event: Harvest): void {
+  log.info("++---h 0",[])
+  let nfts = DecodeHarvestEvent(event.transaction.input, event.transaction.hash.toHex())
+  if (nfts.length == 0) {
+    // TODO: harvest event emitted from invalid tx 
+  } else if (nfts.length == 1)  {
+    // TODO: only 1 harvest -> no need to check index of the event 
+    let position = nfts[0]
+  } else {
+    // TODO: there are more than 1 event emitted from 1 tx -> need to check index of the event inside the tx, to map to nft from []nfts
+    var harvestGroup = HarvestEventGroup.load(event.transaction.hash.toHex())
+    if (harvestGroup == null) {
+      harvestGroup = new HarvestEventGroup(event.transaction.hash.toHex())
+      harvestGroup.handledEvents = 0
+    }
+
+
+    harvestGroup.handledEvents += 1
+    harvestGroup.save()
+  }
+
+
+}
+function DecodeHarvestEvent(txBytes: Bytes, txHash: string): i32[] {
+  const functionInput = Bytes.fromUint8Array(txBytes.subarray(4));
+  const tuplePrefix = ByteArray.fromHexString(
+      '0x0000000000000000000000000000000000000000000000000000000000000020'
+  );
+  const functionInputAsTuple = new Uint8Array(
+      tuplePrefix.length + functionInput.length
+  );
+  //concat prefix & original input
+  functionInputAsTuple.set(tuplePrefix, 0);
+  functionInputAsTuple.set(functionInput, tuplePrefix.length);
+
+  const tupleInputBytes = Bytes.fromUint8Array(functionInputAsTuple);
+
+  // harvest event can be emitted from both harvest and exit action
+  // there should be a kind of try catch process with tx input to classify them
+
+  //exit 
+  var decoded = ethereum.decode(
+      '(uint256,uint256[],uint256[])',
+      tupleInputBytes
+  );
+  if (decoded != null){
+    //exit tx
+    const t = decoded.toTuple();
+    const pid = t[0].toI32()
+    const nfts = t[1].toI32Array()
+    const liqs = t[2].toBigIntArray()
+    log.info("++---h 1: {} {} {}", [pid.toString(), nfts.length.toString(), liqs.length.toString()])
+    return nfts
+  }
+
+  //harvestMultiplePools
+  decoded = ethereum.decode(
+    '(uint[],bytes[])',
+    tupleInputBytes
+  );
+  if (decoded != null){
+    //harvestMultiplePools tx
+    const t = decoded.toTuple();
+    const nfts = t[0].toI32Array()
+    log.info("++---h 2: {}", [nfts.length.toString()])
+    return nfts
+  }
+  log.info("++---h 3 invalid tx", [])
+  return []
 }

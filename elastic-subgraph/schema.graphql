@@ -242,6 +242,12 @@ type PositionFee @entity {
   token1: Token!
 }
 
+type PositionReward @entity {
+  # NFT token id
+  id: ID!
+  data: String
+} 
+
 
 type PositionSnapshot @entity {
   # <NFT token id>#<block number>
@@ -672,6 +678,11 @@ type FarmingPool @entity {
   rewardTokens: [RewardToken!]! @derivedFrom(field: "farmingPool")
   joinedPositions: [JoinedPosition!]! @derivedFrom(field: "farmingPool")
 }
+
+type HarvestEventGroup @entity {
+  id: ID!
+  handledEvents:Int!
+} 
 
 type ContractEvent @entity {
   id: ID!
