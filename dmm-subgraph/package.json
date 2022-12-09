@@ -10,9 +10,11 @@
     "deploy": "graph deploy kybernetwork/kyberswap-exchange-${NETWORK} --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug",
     "create-subgraph": "graph create kybernetwork/kyberswap-exchange-${NETWORK} --node https://${NETWORK}-graph.kyberengineering.io/admin",
     "deploy-subgraph": "graph deploy kybernetwork/kyberswap-exchange-${NETWORK} --debug --ipfs https://${NETWORK}-graph.kyberengineering.io/ipfs --node https://${NETWORK}-graph.kyberengineering.io/admin",
+    "create-dev": "graph create kybernetwork/kyberswap-exchange-${NETWORK} --node https://graph.dev.kyberengineering.io/bsc",
+    "deploy-dev": "graph deploy kybernetwork/kyberswap-exchange-${NETWORK} --debug --ipfs https://ipfs.dev.kyberengineering.io/bsc --node https://graph.dev.kyberengineering.io/bsc",
     "create-local": "graph create dynamic-amm/dynamic-amm --node http://127.0.0.1:8020",
     "remove-local": "graph remove dynamic-amm/dynamic-amm --node http://127.0.0.1:8020",
-    "deploy-local": "graph deploy dynamic-amm/dynamic-amm --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+    "deploy-local": "graph deploy dynamic-amm/dynamic-amm --debug --ipfs http://localhost:5002 --node http://127.0.0.1:8020",
     "watch-local": "graph deploy dynamic-amm/dynamic-amm --watch --debug --node http://127.0.0.1:8020/ --ipfs http://localhost:5001",
     "prettier": "./node_modules/.bin/prettier --write src/mappings/*",
     "deploy-ropsten": "graph deploy viet-nv/kyberswap-classic-ropsten --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug"
