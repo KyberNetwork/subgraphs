@@ -11,10 +11,10 @@ import {
   Deposit,
   Harvest
 } from '../types/templates/KyberFairLaunch/KyberFairLaunch'
-import { Farm, JoinedPosition, FarmingPool, Token, DepositedPosition, RewardToken,ContractEvent, HarvestEventGroup } from '../types/schema'
+import { Farm, JoinedPosition, FarmingPool, Token, DepositedPosition, RewardToken,ContractEvent, HarvestEventGroup, PositionReward } from '../types/schema'
 import { KyberFairLaunch as KyberFairLaunchTemplate } from '../types/templates'
 import { ZERO_BI, ADDRESS_ZERO, WETH_ADDRESS, ZERO_BD } from '../utils/constants'
-import { BigInt, log, Address, store, Bytes, ByteArray, ethereum } from '@graphprotocol/graph-ts'
+import { BigInt, log, Address, store, Bytes, ByteArray, ethereum, json, Value } from '@graphprotocol/graph-ts'
 import { fetchTokenSymbol, fetchTokenName, fetchTokenTotalSupply, fetchTokenDecimals } from '../utils/token'
 
 function getToken(item: Address): string {
@@ -82,6 +82,7 @@ export function handleRewardContractAdded(event: RewardContractAdded): void {
     farmingPool.vestingDuration = poolInfo.value3
     farmingPool.pool = poolInfo.value0.toHexString()
     farmingPool.farm = fairLaunch.id
+    farmingPool.rewardTokens = []
     for (let j = 0; j < poolInfo.value7.length; j++) {
       let token = getToken(poolInfo.value7[j])
       let amount = poolInfo.value8[j]
@@ -93,6 +94,7 @@ export function handleRewardContractAdded(event: RewardContractAdded): void {
       rewardToken.farmingPool = farmingPool.id
       rewardToken.priority = j
       rewardToken.save()
+      farmingPool.rewardTokens.push(rewardToken.id)
     }
     let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
     ev.logIndex = event.logIndex
@@ -118,6 +120,7 @@ export function handleAddPool(event: AddPool): void {
   farmingPool.vestingDuration = event.params.vestingDuration
   farmingPool.pool = poolInfo.value0.toHexString()
   farmingPool.farm = event.address.toHexString()
+  farmingPool.rewardTokens = []
   for (let i = 0; i < poolInfo.value7.length; i++) {
     let token = getToken(poolInfo.value7[i])
     let amount = poolInfo.value8[i]
@@ -129,6 +132,7 @@ export function handleAddPool(event: AddPool): void {
     rewardToken.farmingPool = farmingPool.id
     rewardToken.priority = i
     rewardToken.save()
+    farmingPool.rewardTokens.push(rewardToken.id)
   }
   // note event info
   let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
@@ -148,6 +152,7 @@ export function handleRenewPool(event: RenewPool): void {
   if (farmingPool === null) {
     farmingPool = new FarmingPool(event.address.toHexString() + '_' + event.params.pid.toString())
   }
+  farmingPool.rewardTokens = []
   let poolInfo = fairLaunchContract.getPoolInfo(event.params.pid)
   farmingPool.pid = event.params.pid
   farmingPool.startTime = event.params.startTime
@@ -168,6 +173,7 @@ export function handleRenewPool(event: RenewPool): void {
     rewardToken.farmingPool = farmingPool.id
     rewardToken.priority = i
     rewardToken.save()
+    farmingPool.rewardTokens.push(rewardToken.id)
   }
   // note event info
   let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
@@ -280,22 +286,12 @@ export function handleDeposit(event: Deposit): void {
 }
 
 export function handleWithdraw(event: Withdraw): void {
-  let depostedPosition = DepositedPosition.load(event.params.nftId.toString())
-  if (depostedPosition) {
-    store.remove('DepositedPosition', depostedPosition.id)
-  }
-  // note event info
-  let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
-  ev.logIndex = event.logIndex
-  ev.name = "Withdraw"
-  ev.transaction= event.transaction.hash.toHex()
-  ev.address = event.address.toHexString()
-  ev.extra = "{" +`"nftId": `+ event.params.nftId.toString() + "}"
-  ev.save()
+  handleWithdrawAnyway(event.params.nftId, event.transaction, event.logIndex, event.address)
 }
 
 export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
   // handleWithdraw(event as Withdraw)
+  handleWithdrawAnyway(event.params.nftId, event.transaction, event.logIndex, event.address)
 
   // TODO: remove joinedPositions when EmergencyWithdraw
   // let farm = Farm.load(event.address.toHexString())
@@ -306,30 +302,137 @@ export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
   //   }
   // })
 }
+
+function handleWithdrawAnyway(nftId: BigInt, transaction: ethereum.Transaction, logIndex: BigInt, address: Address): void {
+  let depostedPosition = DepositedPosition.load(nftId.toString())
+  if (depostedPosition) {
+    store.remove('DepositedPosition', depostedPosition.id)
+  }
+  // note event info
+  let ev = new ContractEvent(transaction.hash.toHex()+logIndex.toString())
+  ev.logIndex = logIndex
+  ev.name = "Withdraw"
+  ev.transaction= transaction.hash.toHex()
+  ev.address = address.toHexString()
+  ev.extra = "{" +`"nftId": `+ nftId.toString() + "}"
+  ev.save() 
+}
 export function handleHarvest(event: Harvest): void {
-  log.info("++---h 0",[])
-  let nfts = DecodeHarvestEvent(event.transaction.input, event.transaction.hash.toHex())
-  if (nfts.length == 0) {
-    // TODO: harvest event emitted from invalid tx 
-  } else if (nfts.length == 1)  {
-    // TODO: only 1 harvest -> no need to check index of the event 
-    let position = nfts[0]
+  log.info("+++---h 0 {}",[event.transaction.hash.toHexString()])
+  let decodedValues = DecodeHarvestEvent(event.transaction.input, event.transaction.hash.toHex()).toArray()
+  if (decodedValues.length == 0) {
+    //TODO: invalid tx
+    log.info("--handleHarvest nfts.length == 0",[])
+    return 
+  }
+  let nfts = decodedValues[0].toI32Array()
+  let pids = decodedValues[1].toI32Array()
+  log.info("+++---h 4: {} {}",[nfts.length.toString(), pids.length.toString()])
+  let rewardToken = Token.load(event.params.reward.toHexString())!
+  // from pid -> FarmingPool -> rewards.length 
+  if (nfts.length == 1)  {
+    // TODO: only 1 nft -> no need to check index of the event 
+    let positionID = nfts[0]
+    let positionReward = PositionReward.load(positionID.toString())
+    if (positionReward == null) {
+      positionReward = new PositionReward(positionID.toString())
+      positionReward.rewards = `[]`
+      // vutien
+    } 
+    positionReward = AggregateReward(rewardToken.id, rewardToken.decimals.toString(), event.params.amount, positionReward)
+    positionReward.save()
+
+    log.info("--handleHarvest nfts.length == 1, {}",[nfts[0].toString()])
   } else {
-    // TODO: there are more than 1 event emitted from 1 tx -> need to check index of the event inside the tx, to map to nft from []nfts
-    var harvestGroup = HarvestEventGroup.load(event.transaction.hash.toHex())
+    // TODO: there are more than 1 nft emitted from 1 tx -> need to check index of the event inside the tx, to map to nft from []nfts
+    let harvestGroup = HarvestEventGroup.load(event.transaction.hash.toHex())
     if (harvestGroup == null) {
       harvestGroup = new HarvestEventGroup(event.transaction.hash.toHex())
       harvestGroup.handledEvents = 0
     }
-
-
+    let assignedNFTIndex = 0 
+    let numberOfRewards = 0 
+    for (let i=0; i< pids.length; i++) {
+      log.info("+++---h 5: {}",[event.address.toHexString() + "_" + pids[i].toString()])
+      let farmingPool = FarmingPool.load(event.address.toHexString() + "_" + pids[i].toString())
+      if (farmingPool == null) {
+        log.info("+++---h 6: {} null",[event.address.toHexString() + "_" + pids[i].toString()])
+      } else {
+        log.info("+++---h 7: {}",[farmingPool.id])
+        if (farmingPool.rewardTokens == null) {
+          log.info("+++---h 8: no reward tokens recorded ",[])
+        }else {
+          log.info("+++---h 9: ",[])
+        }
+      }
+      numberOfRewards += FarmingPool.load(event.address.toHexString() + "_" + pids[i].toString())!.rewardTokens.length
+      if (numberOfRewards > harvestGroup.handledEvents) {
+        assignedNFTIndex = i
+      }
+    }
+    let positionID = nfts[assignedNFTIndex]
+    log.info("+++---h 9999: {}",[positionID.toString()])
+    let positionReward = PositionReward.load(positionID.toString())
+    if (positionReward == null) {
+      positionReward = new PositionReward(positionID.toString())
+      positionReward.rewards = `[]`
+    } 
+    positionReward = AggregateReward(rewardToken.id, rewardToken.decimals.toString(), event.params.amount, positionReward)
+    positionReward.save()
     harvestGroup.handledEvents += 1
     harvestGroup.save()
   }
-
-
 }
-function DecodeHarvestEvent(txBytes: Bytes, txHash: string): i32[] {
+
+function AggregateReward(inputRewardToken: string, inputRewardTokenDecimals: string, inputRewardAmount: BigInt, positionReward: PositionReward): PositionReward {
+  let addNewToken = true
+  log.info("+++---h 10: {}", [positionReward.rewards!])
+  let jsonValues = json.fromString(positionReward.rewards!).toArray()
+  log.info("+++---h 11: {}", [jsonValues.length.toString()])
+  let dest = `[`
+    for (let i=0; i<jsonValues.length; i++ ) {
+        let postionRewardData = jsonValues[i].toObject()
+        let rewardToken = postionRewardData.get("rewardToken")!.toString()
+        let rewardTokenDecimals = postionRewardData.get("rewardTokenDecimals")!.toString()
+        let rewardAmount = postionRewardData.get("rewardAmount")!.toBigInt()
+        if (rewardToken != inputRewardToken) {
+            dest += buildRewardObject(rewardToken, rewardTokenDecimals, rewardAmount)
+            if (i < jsonValues.length-1) {
+                dest += `,`
+            }
+            continue
+        }
+        addNewToken = false 
+        rewardAmount = rewardAmount.plus(inputRewardAmount)
+        // assert.stringEquals(rewardAmount.toString(), "200" )
+        dest += buildRewardObject(rewardToken, rewardTokenDecimals, rewardAmount)
+        if (i < jsonValues.length-1) {
+            dest += `,`
+        }
+    }
+    if (addNewToken) {
+        if (jsonValues.length > 0 ) {
+          dest += `,`
+        }
+        dest += buildRewardObject(inputRewardToken, inputRewardTokenDecimals, inputRewardAmount)
+    } 
+    dest += `]`
+    positionReward.rewards = dest
+    return positionReward
+}
+
+function buildRewardObject(rewardToken: string, rewardTokenDecimals: string, rewardAmount: BigInt): string {
+  let dest = `{`
+        dest += `"rewardToken": "` + rewardToken + `",`
+        dest += `"rewardTokenDecimals": "` + rewardTokenDecimals + `",`
+        dest += `"rewardAmount": ` + rewardAmount.toString()
+    dest += `}`
+    return dest
+}
+
+
+function DecodeHarvestEvent(txBytes: Bytes, txHash: string): Value {
+  
   const functionInput = Bytes.fromUint8Array(txBytes.subarray(4));
   const tuplePrefix = ByteArray.fromHexString(
       '0x0000000000000000000000000000000000000000000000000000000000000020'
@@ -357,8 +460,13 @@ function DecodeHarvestEvent(txBytes: Bytes, txHash: string): i32[] {
     const pid = t[0].toI32()
     const nfts = t[1].toI32Array()
     const liqs = t[2].toBigIntArray()
-    log.info("++---h 1: {} {} {}", [pid.toString(), nfts.length.toString(), liqs.length.toString()])
-    return nfts
+    let pids = new Array<i32>()
+    for (let i=0; i<nfts.length; i++){
+      pids.push(pid)
+    }
+
+    log.info("+++---h 1: {} {} {} {}", [pid.toString(), nfts.length.toString(), liqs.length.toString(), pids.length.toString()])
+    return Value.fromArray([Value.fromI32Array(nfts), Value.fromI32Array(pids)])
   }
 
   //harvestMultiplePools
@@ -370,9 +478,23 @@ function DecodeHarvestEvent(txBytes: Bytes, txHash: string): i32[] {
     //harvestMultiplePools tx
     const t = decoded.toTuple();
     const nfts = t[0].toI32Array()
-    log.info("++---h 2: {}", [nfts.length.toString()])
-    return nfts
+    const bytes = t[1].toBytesArray()
+
+    let pids= new Array<i32>()
+    for (let i=0; i< bytes.length; i++ ){
+        const decodedPid = ethereum.decode(
+            '(uint[])',
+            bytes[i]
+        );
+        if (decodedPid == null){
+            throw Error('Decode harvest tx failed: get pids step')
+
+        } 
+        pids.push(decodedPid.toTuple()[0].toI32Array()[0])
+    }
+    log.info("+++---h 2: {} {}", [nfts.length.toString(), pids.length.toString()])
+    return Value.fromArray([Value.fromI32Array(nfts), Value.fromI32Array(pids)])
   }
-  log.info("++---h 3 invalid tx", [])
-  return []
+  log.info("+++---h 3 invalid tx", [])
+  return Value.fromArray([])
 }

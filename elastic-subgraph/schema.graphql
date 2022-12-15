@@ -245,7 +245,7 @@ type PositionFee @entity {
 type PositionReward @entity {
   # NFT token id
   id: ID!
-  data: String
+  rewards: String
 } 
 
 
@@ -675,7 +675,7 @@ type FarmingPool @entity {
   feeTarget: BigInt!
   vestingDuration: BigInt!
   pool: Pool!
-  rewardTokens: [RewardToken!]! @derivedFrom(field: "farmingPool")
+  rewardTokens: [RewardToken!]! 
   joinedPositions: [JoinedPosition!]! @derivedFrom(field: "farmingPool")
 }
 

@@ -440,7 +440,12 @@ function handlePositionFeeCollected(event: BurnRTokensEvent): void {
   // if (event.transaction.hash.toHexString().toLowerCase() == "0x7607f7b24f8cf90361f73c626afc56bd198f126ec416c1110654712fcbfa6ff0") {
   //   log.debug(event.transaction.input.toHexString(),[])
   // }
+  
   const positionID = DecodeCollectEvent(event.transaction.input)
+  if (positionID.lt(ZERO_BI)) {
+    log.info("----gnosis {}", [event.transaction.hash.toHexString()])
+    return
+  }
   let position = Position.load(positionID.toString())
   if (position == null) {
     return
@@ -813,12 +818,14 @@ export function DecodeCollectEvent(txBytes: Bytes): BigInt{
     multicallFunctionInput
   );
   if (decodedMulticall == null){
+    return BigInt.fromI32(-1)
     throw Error('Decode collect tx failed: multicall step')
   }
   let collectByteData = decodedMulticall.toBytesArray()[1]
   const collectFunctionInput = Bytes.fromUint8Array(collectByteData.subarray(4))
   let decodedCollect = ethereum.decode('(uint,uint,uint,uint)', collectFunctionInput)
   if (decodedCollect == null) {
+    return BigInt.fromI32(-1)
     throw Error('Decode collect tx failed: collect step')
   }
   const t = decodedCollect.toTuple();
