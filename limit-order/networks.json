@@ -1,0 +1,14 @@
+{
+  "goerli": {
+    "LimitOrderProtocol": {
+      "address": "0xAA3ba3d7f221C236dDa952D4Dd0227a7645a5245",
+      "startBlock": 8143533
+    }
+  },
+  "polygon": {
+    "LimitOrderProtocol": {
+      "address": "0xBE898b8D6504ad51e9e335ebC37685375551e544",
+      "startBlock": 36890027
+    }
+  }
+}

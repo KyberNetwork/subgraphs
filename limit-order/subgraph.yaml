@@ -1,0 +1,33 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: LimitOrderProtocol
+    network: polygon
+    source:
+      abi: LimitOrderProtocol
+      address: "0xBE898b8D6504ad51e9e335ebC37685375551e544"
+      startBlock: 36890027
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - NonceIncreased
+        - OrderCanceled
+        - OrderFilled
+        - OrderFilledRFQ
+      abis:
+        - name: LimitOrderProtocol
+          file: ./abis/LimitOrderProtocol.json
+      eventHandlers:
+        - event: NonceIncreased(indexed address,uint256,uint256)
+          handler: handleNonceIncreased
+        - event: OrderCanceled(indexed address,bytes32,uint256)
+          handler: handleOrderCanceled
+        - event: OrderFilled(indexed address,bytes32,uint256,uint256,uint256)
+          handler: handleOrderFilled
+        - event: OrderFilledRFQ(indexed address,indexed bytes32,uint256,uint256)
+          handler: handleOrderFilledRFQ
+      file: ./src/limit-order-protocol.ts
