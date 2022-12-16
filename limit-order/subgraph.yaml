@@ -4,7 +4,7 @@ schema:
 dataSources:
   - kind: ethereum
     name: LimitOrderProtocol
-    network: polygon
+    network: matic
     source:
       abi: LimitOrderProtocol
       address: "0xBE898b8D6504ad51e9e335ebC37685375551e544"

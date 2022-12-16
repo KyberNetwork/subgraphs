@@ -4,9 +4,9 @@
   "scripts": {
     "codegen": "graph codegen",
     "build-goerli": "graph build --network goerli",
-    "build-polygon": "graph build --network polygon",
+    "build-polygon": "graph build --network matic",
     "deploy-goerli-stg": "graph deploy --network goerli --node https://api.thegraph.com/deploy/ vuquang23/limit-order-stg-goerli",
-    "deploy-polygon-stg": "graph deploy --network polygon --node https://polygon-graph.kyberengineering.io/admin kybernetwork/limit-order-stg",
+    "deploy-polygon-stg": "graph deploy --network matic --node https://api.thegraph.com/deploy/ vuquang23/limit-order-stg-polygon",
     "create-local": "graph create --node http://localhost:8020/ vuquang23/limit-order-goerli-v7",
     "remove-local": "graph remove --node http://localhost:8020/ vuquang23/limit-order-goerli-v7",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 vuquang23/limit-order-goerli-v8"
