@@ -7,7 +7,7 @@ type StakingPosition @entity {
   id: ID! # user-fairLaunch-poolID
   user: Bytes!
   fairLaunch: KyberFairLaunch!
-  poolID: Int!
+  poolID: BigInt!
   stakeToken: Bytes!
   amount: BigInt!
 }
@@ -15,7 +15,7 @@ type StakingPosition @entity {
 type DepositEvent @entity {
   id: ID!
   user: Bytes!
-  pid: Int!
+  pid: BigInt!
   blockNumber: BigInt!
   amount: BigInt!
 }
@@ -23,7 +23,7 @@ type DepositEvent @entity {
 type WithdrawEvent @entity {
   id: ID!
   user: Bytes!
-  pid: Int!
+  pid: BigInt!
   blockNumber: BigInt!
   amount: BigInt!
 }
@@ -31,7 +31,7 @@ type WithdrawEvent @entity {
 type EmergencyWithdrawEvent @entity {
   id: ID!
   user: Bytes!
-  pid: Int!
+  pid: BigInt!
   blockNumber: BigInt!
   amount: BigInt!
 }

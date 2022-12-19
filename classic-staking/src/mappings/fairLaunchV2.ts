@@ -13,7 +13,7 @@ export function handleDeposit(event: Deposit): void {
   let depositEvent = new DepositEvent(id)
 
   depositEvent.user = event.params.user
-  depositEvent.pid = event.params.pid.toI32()
+  depositEvent.pid = event.params.pid
   depositEvent.blockNumber = event.block.number
   depositEvent.amount = event.params.amount
 
@@ -30,7 +30,7 @@ export function handleWithdraw(event: Withdraw): void {
   let withdrawEvent = new WithdrawEvent(id)
 
   withdrawEvent.user = event.params.user
-  withdrawEvent.pid = event.params.pid.toI32()
+  withdrawEvent.pid = event.params.pid
   withdrawEvent.blockNumber = event.block.number
   withdrawEvent.amount = event.params.amount
 
@@ -47,7 +47,7 @@ export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
   let emergencyEvent = new EmergencyWithdrawEvent(id)
 
   emergencyEvent.user = event.params.user
-  emergencyEvent.pid = event.params.pid.toI32()
+  emergencyEvent.pid = event.params.pid
   emergencyEvent.blockNumber = event.block.number
   emergencyEvent.amount = event.params.amount
 
@@ -73,13 +73,13 @@ function createOrLoadStakingPosition(user: Bytes, fairLaunchAddress: Address, po
 
     position.user = user
     position.fairLaunch = fairLaunchAddress.toHex()
-    position.poolID = poolID.toI32()
+    position.poolID = poolID
     position.amount = ZERO_BI
 
     let fairLaunch = KyberFairLaunch.load(fairLaunchAddress.toHex())
     if (fairLaunch !== null) {
       let stakeTokens = fairLaunch.stakeTokens
-      position.stakeToken = stakeTokens[position.poolID]
+      position.stakeToken = stakeTokens[position.poolID.toI32()]
     }
   }
 
