@@ -11,3 +11,27 @@ type StakingPosition @entity {
   stakeToken: Bytes!
   amount: BigInt!
 }
+
+type DepositEvent @entity {
+  id: ID!
+  user: Bytes!
+  pid: Int!
+  blockNumber: BigInt!
+  amount: BigInt!
+}
+
+type WithdrawEvent @entity {
+  id: ID!
+  user: Bytes!
+  pid: Int!
+  blockNumber: BigInt!
+  amount: BigInt!
+}
+
+type EmergencyWithdrawEvent @entity {
+  id: ID!
+  user: Bytes!
+  pid: Int!
+  blockNumber: BigInt!
+  amount: BigInt!
+}
