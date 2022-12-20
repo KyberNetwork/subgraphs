@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: LimitOrderProtocol
-    network: matic
+    network: goerli
     source:
       abi: LimitOrderProtocol
-      address: "0xBE898b8D6504ad51e9e335ebC37685375551e544"
-      startBlock: 36890027
+      address: "0x611e8e5CB386612312358DFb34b79a3108F87406"
+      startBlock: 8143533
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6

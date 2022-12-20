@@ -2,13 +2,13 @@
   "goerli": {
     "LimitOrderProtocol": {
       "address": "0x611e8e5CB386612312358DFb34b79a3108F87406",
-      "startBlock": 8143533
+      "startBlock": 8150520
     }
   },
   "matic": {
     "LimitOrderProtocol": {
       "address": "0x2832a1a7b01b6ac242e210582f9c15684b1c3657",
-      "startBlock": 36890027
+      "startBlock": 36935294
     }
   }
 }
