@@ -47,7 +47,7 @@ export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
   log.debug('handleEmergencyWithdraw v1', [])
   // Fix the case pid over int32.
   // Example: https://polygonscan.com/tx/0x8d22466996c1f9b2965b7894ec7784858ccbc2ed05ce2a0e2fcb2c2581121a9e#eventlog
-  if (event.params.amount === BigInt.fromI32(0)) {
+  if (event.params.amount == BigInt.fromI32(0)) {
     return
   }
 

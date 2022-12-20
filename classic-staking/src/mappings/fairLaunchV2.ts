@@ -45,7 +45,7 @@ export function handleWithdraw(event: Withdraw): void {
 
 export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
   log.debug('handleEmergencyWithdraw v2', [])
-  if (event.params.amount === BigInt.fromI32(0)) {
+  if (event.params.amount == BigInt.fromI32(0)) {
     return
   }
 
