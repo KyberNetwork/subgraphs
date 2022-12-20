@@ -14,8 +14,11 @@ export function handleDeposit(event: Deposit): void {
 
   depositEvent.user = event.params.user
   depositEvent.pid = event.params.pid
-  depositEvent.blockNumber = event.params.blockNumber
   depositEvent.amount = event.params.amount
+
+  depositEvent.transaction = event.transaction.hash
+  depositEvent.blockNumber = event.block.number
+  depositEvent.logIndex = event.logIndex
 
   depositEvent.save()
 }
@@ -31,14 +34,23 @@ export function handleWithdraw(event: Withdraw): void {
 
   withdrawEvent.user = event.params.user
   withdrawEvent.pid = event.params.pid
-  withdrawEvent.blockNumber = event.params.blockNumber
   withdrawEvent.amount = event.params.amount
+
+  withdrawEvent.transaction = event.transaction.hash
+  withdrawEvent.blockNumber = event.block.number
+  withdrawEvent.logIndex = event.logIndex
 
   withdrawEvent.save()
 }
 
 export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
   log.debug('handleEmergencyWithdraw v1', [])
+  if (event.params.amount === 0) {
+    // Fix the case pid over int32.
+    // Example: https://polygonscan.com/tx/0x8d22466996c1f9b2965b7894ec7784858ccbc2ed05ce2a0e2fcb2c2581121a9e#eventlog
+    return
+  }
+
   let position = createOrLoadStakingPosition(event.params.user, event.address, event.params.pid)
   position.amount = position.amount.minus(event.params.amount)
   position.save()
@@ -48,8 +60,11 @@ export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
 
   emergencyEvent.user = event.params.user
   emergencyEvent.pid = event.params.pid
-  emergencyEvent.blockNumber = event.params.blockNumber
   emergencyEvent.amount = event.params.amount
+
+  emergencyEvent.transaction = event.transaction.hash
+  emergencyEvent.blockNumber = event.block.number
+  emergencyEvent.logIndex = event.logIndex
 
   emergencyEvent.save()
 }
@@ -79,7 +94,7 @@ function createOrLoadStakingPosition(user: Bytes, fairLaunchAddress: Address, po
     let fairLaunch = KyberFairLaunch.load(fairLaunchAddress.toHex())
     if (fairLaunch !== null) {
       let stakeTokens = fairLaunch.stakeTokens
-      position.stakeToken = stakeTokens[position.poolID.toI32()]
+      position.stakeToken = stakeTokens[poolID.toI32()]
     }
   }
 

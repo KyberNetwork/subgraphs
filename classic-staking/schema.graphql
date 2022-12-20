@@ -16,22 +16,31 @@ type DepositEvent @entity {
   id: ID!
   user: Bytes!
   pid: BigInt!
-  blockNumber: BigInt!
   amount: BigInt!
+
+  transaction: Bytes!
+  blockNumber: BigInt!
+  logIndex: BigInt!
 }
 
 type WithdrawEvent @entity {
   id: ID!
   user: Bytes!
   pid: BigInt!
-  blockNumber: BigInt!
   amount: BigInt!
+
+  transaction: Bytes!
+  blockNumber: BigInt!
+  logIndex: BigInt!
 }
 
 type EmergencyWithdrawEvent @entity {
   id: ID!
   user: Bytes!
   pid: BigInt!
-  blockNumber: BigInt!
   amount: BigInt!
+
+  transaction: Bytes!
+  blockNumber: BigInt!
+  logIndex: BigInt!
 }

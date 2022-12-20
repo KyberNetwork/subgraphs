@@ -14,8 +14,11 @@ export function handleDeposit(event: Deposit): void {
 
   depositEvent.user = event.params.user
   depositEvent.pid = event.params.pid
-  depositEvent.blockNumber = event.block.number
   depositEvent.amount = event.params.amount
+
+  depositEvent.transaction = event.transaction.hash
+  depositEvent.blockNumber = event.block.number
+  depositEvent.logIndex = event.logIndex
 
   depositEvent.save()
 }
@@ -31,14 +34,21 @@ export function handleWithdraw(event: Withdraw): void {
 
   withdrawEvent.user = event.params.user
   withdrawEvent.pid = event.params.pid
-  withdrawEvent.blockNumber = event.block.number
   withdrawEvent.amount = event.params.amount
+
+  withdrawEvent.transaction = event.transaction.hash
+  withdrawEvent.blockNumber = event.block.number
+  withdrawEvent.logIndex = event.logIndex
 
   withdrawEvent.save()
 }
 
 export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
   log.debug('handleEmergencyWithdraw v2', [])
+  if (event.params.amount === 0) {
+    return
+  }
+
   let position = createOrLoadStakingPosition(event.params.user, event.address, event.params.pid)
   position.amount = position.amount.minus(event.params.amount)
   position.save()
@@ -48,8 +58,12 @@ export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
 
   emergencyEvent.user = event.params.user
   emergencyEvent.pid = event.params.pid
-  emergencyEvent.blockNumber = event.block.number
   emergencyEvent.amount = event.params.amount
+
+  emergencyEvent.transaction = event.transaction.hash
+  emergencyEvent.blockNumber = event.block.number
+  emergencyEvent.logIndex = event.logIndex
+
 
   emergencyEvent.save()
 }
@@ -79,7 +93,7 @@ function createOrLoadStakingPosition(user: Bytes, fairLaunchAddress: Address, po
     let fairLaunch = KyberFairLaunch.load(fairLaunchAddress.toHex())
     if (fairLaunch !== null) {
       let stakeTokens = fairLaunch.stakeTokens
-      position.stakeToken = stakeTokens[position.poolID.toI32()]
+      position.stakeToken = stakeTokens[poolID.toI32()]
     }
   }
 
