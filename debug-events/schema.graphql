@@ -1,0 +1,10 @@
+type DepositEntity @entity {
+  id: ID!
+  user: Bytes!
+  pid: BigInt!
+  amount: BigInt!
+
+  transaction: Bytes!
+  blockNumber: BigInt!
+  logIndex: BigInt!
+}
