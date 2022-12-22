@@ -1,6 +1,0 @@
-build/
-node_modules/
-generated/
-tests/.bin/
-tests/.latest.json
-.DS_STORE

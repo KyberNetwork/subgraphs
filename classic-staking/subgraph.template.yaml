@@ -64,9 +64,6 @@ templates:
       language: wasm/assemblyscript
       entities:
         - StakingPosition
-        - DepositEvent
-        - WithdrawEvent
-        - EmergencyWithdrawEvent
       abis:
         - name: KyberFairLaunch
           file: ./abis/KyberFairLaunch.json
@@ -93,9 +90,6 @@ templates:
       language: wasm/assemblyscript
       entities:
         - StakingPosition
-        - DepositEvent
-        - WithdrawEvent
-        - EmergencyWithdrawEvent
       abis:
         - name: KyberFairLaunchV2
           file: ./abis/KyberFairLaunchV2.json

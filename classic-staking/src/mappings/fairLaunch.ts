@@ -1,6 +1,6 @@
 import { AddNewPool, Deposit, EmergencyWithdraw, Withdraw } from '../types/templates/KyberFairLaunch/KyberFairLaunch'
 import { Address, BigInt, Bytes, log } from '@graphprotocol/graph-ts'
-import { DepositEvent, EmergencyWithdrawEvent, KyberFairLaunch, StakingPosition, WithdrawEvent } from '../types/schema'
+import { KyberFairLaunch, StakingPosition } from '../types/schema'
 import { ZERO_BI } from './utils'
 
 export function handleDeposit(event: Deposit): void {
@@ -8,19 +8,6 @@ export function handleDeposit(event: Deposit): void {
   let position = createOrLoadStakingPosition(event.params.user, event.address, event.params.pid)
   position.amount = position.amount.plus(event.params.amount)
   position.save()
-
-  let id = `${event.params.user.toHex()}-${event.params.blockNumber}-${event.params.pid}`
-  let depositEvent = new DepositEvent(id)
-
-  depositEvent.user = event.params.user
-  depositEvent.pid = event.params.pid
-  depositEvent.amount = event.params.amount
-
-  depositEvent.transaction = event.transaction.hash
-  depositEvent.blockNumber = event.block.number
-  depositEvent.logIndex = event.logIndex
-
-  depositEvent.save()
 }
 
 export function handleWithdraw(event: Withdraw): void {
@@ -28,19 +15,6 @@ export function handleWithdraw(event: Withdraw): void {
   let position = createOrLoadStakingPosition(event.params.user, event.address, event.params.pid)
   position.amount = position.amount.minus(event.params.amount)
   position.save()
-
-  let id = `${event.params.user.toHex()}-${event.params.blockNumber}-${event.params.pid}`
-  let withdrawEvent = new WithdrawEvent(id)
-
-  withdrawEvent.user = event.params.user
-  withdrawEvent.pid = event.params.pid
-  withdrawEvent.amount = event.params.amount
-
-  withdrawEvent.transaction = event.transaction.hash
-  withdrawEvent.blockNumber = event.block.number
-  withdrawEvent.logIndex = event.logIndex
-
-  withdrawEvent.save()
 }
 
 export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
@@ -54,19 +28,6 @@ export function handleEmergencyWithdraw(event: EmergencyWithdraw): void {
   let position = createOrLoadStakingPosition(event.params.user, event.address, event.params.pid)
   position.amount = position.amount.minus(event.params.amount)
   position.save()
-
-  let id = `${event.params.user.toHex()}-${event.params.blockNumber}-${event.params.pid}`
-  let emergencyEvent = new EmergencyWithdrawEvent(id)
-
-  emergencyEvent.user = event.params.user
-  emergencyEvent.pid = event.params.pid
-  emergencyEvent.amount = event.params.amount
-
-  emergencyEvent.transaction = event.transaction.hash
-  emergencyEvent.blockNumber = event.block.number
-  emergencyEvent.logIndex = event.logIndex
-
-  emergencyEvent.save()
 }
 
 export function handleAddNewPool(event: AddNewPool): void {
@@ -88,7 +49,7 @@ function createOrLoadStakingPosition(user: Bytes, fairLaunchAddress: Address, po
 
     position.user = user
     position.fairLaunch = fairLaunchAddress.toHex()
-    position.poolID = poolID
+    position.poolID = poolID.toI32()
     position.amount = ZERO_BI
 
     let fairLaunch = KyberFairLaunch.load(fairLaunchAddress.toHex())
