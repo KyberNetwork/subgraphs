@@ -21,8 +21,12 @@
     "0xc7198437980c041c805a1edcba50c1ce5db95118",
     "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab",
     "0x39fc9e94caeacb435842fadedecb783589f50f5f",
-    "0x2b2c81e08f1af8835a78bb2a90ae924ace0ea4be"
+    "0x2b2c81e08f1af8835a78bb2a90ae924ace0ea4be",
+    "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+    "0x5c49b268c9841aff1cc3b0a418ff5c3442ee3f3b",
+    "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7"
   ],
+  "_whitelistedTokens_note": ["WAVAX", "DAI.e", "USDC.e", "USDT.e", "WETH.e", "KNC", "sAvax", "USDC", "MAI", "USDt"],
   "reward_locker": {
     "address": "0xf530a090ef6481cfb33f98c63532e7745abab58a",
     "startBlock": "4451712"
