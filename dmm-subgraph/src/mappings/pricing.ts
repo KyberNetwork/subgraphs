@@ -124,7 +124,22 @@ export function findEthPerToken(token: Token, event: Sync): BigDecimal {
         .times(BD_100)
         .div(pool.reserve0.div(pool.vReserve0).plus(pool.reserve1.div(pool.vReserve1)))
 
-      if (percentToken0.gt(BD_90) || percentToken0.lt(BD_10)) continue
+      if (percentToken0.gt(BD_90) || percentToken0.lt(BD_10)) {
+        let bundle = Bundle.load('1')
+        let token0 = Token.load(pool.token0)
+        let token1 = Token.load(pool.token1)
+        let reserve0Usd = pool.reserve0.times(token0.derivedETH).times(bundle.ethPrice)
+        let reserve1Usd = pool.reserve1.times(token1.derivedETH).times(bundle.ethPrice)
+
+        let minimumUSD = BigDecimal.fromString('100')
+        if (NETWORK === 'mainnet' || NETWORK === 'ethereum') {
+          minimumUSD = BigDecimal.fromString('1000')
+        }
+
+        // only exclude if token percent is lower than 10% and it's reserveUSD is lower than $1000(ethereum) or $100 (other network)
+        if (percentToken0.lt(BD_10) && reserve0Usd.lt(minimumUSD)) continue
+        if (percentToken0.gt(BD_90) && reserve1Usd.lt(minimumUSD)) continue
+      }
 
       if (pool.token0 == token.id && pool.reserveETH.gt(MINIMUM_LIQUIDITY_THRESHOLD_ETH)) {
         let token1 = Token.load(pool.token1)
