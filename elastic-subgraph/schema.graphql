@@ -252,6 +252,8 @@ type Transaction @entity {
   blockNumber: BigInt!
   # timestamp txn was confirmed
   timestamp: BigInt!
+  # interacted with (to)
+  to: Bytes
   # gas used during txn execution
   gasUsed: BigInt!
   gasPrice: BigInt!
@@ -679,6 +681,3 @@ type JoinedPosition @entity {
   farmingPool: FarmingPool!
   position: Position!
 }
-
-
-
