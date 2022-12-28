@@ -463,7 +463,7 @@ function handlePositionFeeCollected(event: BurnRTokensEvent): void {
     // positionFee.collectedFeesUSD = BigDecimal.fromString('0')
   }else {
     positionFee.collectedFeesToken0 = positionFee.collectedFeesToken0.plus(event.params.qty0.toBigDecimal())
-    positionFee.collectedFeesToken0 = positionFee.collectedFeesToken1.plus(event.params.qty1.toBigDecimal())
+    positionFee.collectedFeesToken1 = positionFee.collectedFeesToken1.plus(event.params.qty1.toBigDecimal())
   } 
   positionFee.save()
 }
