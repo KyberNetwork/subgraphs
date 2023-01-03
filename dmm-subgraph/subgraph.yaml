@@ -2,19 +2,19 @@ specVersion: 0.0.2
 description: DMM is a decentralized protocol for automated token exchange on Ethereum.
 repository: https://github.com/dynamic-amm/dmm-subgraph
 graft:
-  base: QmQJMG4LAfLFJCjnvaambJjyB2P3BpgFefhBxYmFK45gnZ
-  block: 55271882
+  base: Qmb7Uo2U691m3AoVMsz8fQj4Q5e13ARbvaSmcscxbHxS34
+  block: 50581368
 schema:
   file: ./schema.graphql
 dataSources:
 
   - kind: ethereum/contract
     name: DmmStaticFeeFactory
-    network: optimism
+    network: arbitrum
     source:
       address: '0x1c758af0688502e49140230f6b0ebd376d429be5'
       abi: DmmStaticFeeFactory
-      startBlock: 12876459  # contract creation block
+      startBlock: 14765013  # contract creation block
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -39,12 +39,42 @@ dataSources:
         - event: SetFeeConfiguration(address,uint24)
           handler: handleSetFeeConfiguration
 
+  - kind: ethereum/contract
+    name: DmmStaticFeeFactoryLegacy
+    network: arbitrum
+    source:
+      address: '0x51e8d106c646ca58caf32a47812e95887c071a62'
+      abi: DmmStaticFeeFactoryLegacy
+      startBlock: 7238400  # contract creation block
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/factory-legacy.ts
+      entities:   # defines which entities are written to stores
+        - Pairs
+        - Pools
+        - Tokens
+      abis:
+        - name: DmmStaticFeeFactoryLegacy
+          file: ./abis/DmmStaticFeeFactoryLegacy.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20SymbolBytes
+          file: ./abis/ERC20SymbolBytes.json
+        - name: ERC20NameBytes
+          file: ./abis/ERC20NameBytes.json
+      eventHandlers:
+        - event: PoolCreated(indexed address,indexed address,address,uint32,uint16,uint256)
+          handler: handlePoolCreatedLegacy
+        - event: SetFeeConfiguration(address,uint16)
+          handler: handleSetFeeConfiguration
 
 
 templates:
   - kind: ethereum/contract
     name: Pool
-    network: optimism
+    network: arbitrum
     source:
       abi: Pool
     mapping:
