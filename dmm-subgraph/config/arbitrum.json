@@ -8,7 +8,8 @@
     "address": "0x51e8d106c646ca58caf32a47812e95887c071a62",
     "startBlock": "7238400"
   },
-  "eth_pricing_pools": "0xfba13b2a525d2b11c6c138a3a31040a663921213",
+  "eth_pricing_pools": "0xb3081636d9ccce1cd19fd404f4ff30776b7cb137",
+  "_old_pricing_pools": "0xfba13b2a525d2b11c6c138a3a31040a663921213",
   "wrapped_native_address": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
   "knc_address": "",
   "kncl_address": "",
@@ -16,8 +17,12 @@
     "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
     "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
     "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
-    "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"
+    "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+    "0x3f56e0c36d275367b8c502090edf38289b3dea0d",
+    "0x316772cfec9a3e976fde42c3ba21f5a13aaaff12",
+    "0xe4dddfe67e7164b0fe14e218d80dc4c08edc01cb"
   ],
-  "minimum_usd_threshold_new_pairs": "1",
-  "minimum_liquidity_threshold_eth": "0"
+  "_whitelistedTokens_note": ["WETH", "DAI", "USDC", "USDT", "MAI", "mKNC", "KNC"],
+  "minimum_usd_threshold_new_pairs": "50",
+  "minimum_liquidity_threshold_eth": "0.05"
 }
