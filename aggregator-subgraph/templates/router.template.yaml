@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 description: Router
 repository: https://github.com/kybernetwork/aggregator-subgraph
 schema:
@@ -14,7 +14,7 @@ dataSources:
       startBlock: {{router.startBlock}}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ../src/router/router.ts
       entities:
@@ -39,7 +39,7 @@ dataSources:
       startBlock: {{routerV2.startBlock}}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ../src/router/router.ts
       entities:
@@ -64,7 +64,7 @@ dataSources:
       startBlock: {{routerV3.startBlock}}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ../src/router/router.ts
       entities:
@@ -81,6 +81,33 @@ dataSources:
         - event: ClientData(bytes)
           handler: handleClientData
   {{/routerV3}}
+  {{#metaAggregationRouterV2}}
+  - kind: ethereum/contract
+    name: MetaAggregationRouterV2
+    network: {{network}}
+    source:
+      address: '{{metaAggregationRouterV2.address}}'
+      abi: MetaAggregationRouterV2
+      startBlock: {{metaAggregationRouterV2.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ../src/router/router.ts
+      entities:
+        - RouterExchange
+        - RouterSwapped
+      abis:
+        - name: MetaAggregationRouterV2
+          file: ../abis/MetaAggregationRouterV2.json
+      eventHandlers:
+        - event: Exchange(address,uint256,address)
+          handler: handleExchange
+        - event: Swapped(address,address,address,address,uint256,uint256)
+          handler: handleSwapped
+        - event: ClientData(bytes)
+          handler: handleClientData
+  {{/metaAggregationRouterV2}}
 templates:
   - kind: ethereum/contract
     name: Executor
@@ -89,7 +116,7 @@ templates:
       abi: Executor
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ../src/router/executor.ts
       entities:
