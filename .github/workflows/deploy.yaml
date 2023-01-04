@@ -4,19 +4,23 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Deploy a subgraph'
+        description: 'Subgraph version'
         type: string
         required: true
       subgraph_name:
         description: 'Subgraph name to deploy'
         type: string
         required: true
+      subgraph_path:
+        description: 'Path to package.json file to deploy'
+        type: string
+        required: true
       node: 
         description: 'GraphNode admin endpoint'
         type: string
         required: true
-      chain:
-        description: 'chain to deploy subgraph'
+      ipfs:
+        description: 'ipfs endpoint for deploy subgraph'
         type: string
         required: true
 
@@ -61,7 +65,7 @@ jobs:
       - name: Create tag
         run: |
           git tag -d "$VERSION_TAG" 2> /dev/null || echo "Release tag '$VERSION_TAG' does NOT exist"
-          git tag --annotate --message "solana-stats-aggregator-stats $VERSION_TAG" "$VERSION_TAG"
+          git tag --annotate --message "$VERSION_TAG" "$VERSION_TAG"
           git push origin "refs/tags/$VERSION_TAG"
       - name: Create release
         uses: softprops/action-gh-release@v1
