@@ -81,6 +81,33 @@ dataSources:
         - event: ClientData(bytes)
           handler: handleClientData
   {{/routerV3}}
+  {{#metaAggregationRouter}}
+  - kind: ethereum/contract
+    name: MetaAggregationRouter
+    network: {{network}}
+    source:
+      address: '{{metaAggregationRouter.address}}'
+      abi: MetaAggregationRouter
+      startBlock: {{metaAggregationRouter.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ../src/router/router.ts
+      entities:
+        - RouterExchange
+        - RouterSwapped
+      abis:
+        - name: MetaAggregationRouter
+          file: ../abis/MetaAggregationRouter.json
+      eventHandlers:
+        - event: Exchange(address,uint256,address)
+          handler: handleExchange
+        - event: Swapped(address,address,address,address,uint256,uint256)
+          handler: handleSwapped
+        - event: ClientData(bytes)
+          handler: handleClientData
+  {{/metaAggregationRouter}}
   {{#metaAggregationRouterV2}}
   - kind: ethereum/contract
     name: MetaAggregationRouterV2
