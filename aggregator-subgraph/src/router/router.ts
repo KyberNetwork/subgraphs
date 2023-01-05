@@ -46,7 +46,20 @@ export function handleSwapped(event: Swapped): void {
   routerSwapped.time = event.block.timestamp;
   routerSwapped.save();
 
-  let routerExchange = createOrLoadRouterExchange(id);
+  let routerExchange = RouterExchange.load(id);
+  if (routerExchange === null) {
+    routerExchange = new RouterExchange(id);
+    routerExchange.router = event.address;
+    // Init as router address. It will be replace when RouterExchange event emit.
+    routerExchange.pair = event.address;
+    routerExchange.token = event.params.dstToken;
+    routerExchange.amount = event.params.returnAmount.toBigDecimal();
+    routerExchange.userAddress = event.transaction.from;
+    routerExchange.tx = event.transaction.hash;
+    routerExchange.blockNumber = event.block.number;
+    routerExchange.time = event.block.timestamp;
+  }
+
   routerExchange.tokenIn = event.params.srcToken;
   routerExchange.tokenOut = event.params.dstToken;
   routerExchange.save();
