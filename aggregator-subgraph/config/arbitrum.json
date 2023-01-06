@@ -11,5 +11,9 @@
   "metaAggregationRouter": {
     "address": "0x617Dee16B86534a5d792A4d7A62FB491B544111E",
     "startBlock": "18689322"
+  },
+  "metaAggregationRouterV2": {
+    "address": "0x6131B5fae19EA4f9D964eAc0408E4408b66337b5",
+    "startBlock": "50495044"
   }
 }
