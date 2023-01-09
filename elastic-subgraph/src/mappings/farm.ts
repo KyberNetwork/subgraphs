@@ -83,6 +83,7 @@ export function handleRewardContractAdded(event: RewardContractAdded): void {
     farmingPool.pool = poolInfo.value0.toHexString()
     farmingPool.farm = fairLaunch.id
     farmingPool.rewardTokens = []
+    let rewardTokens = farmingPool.rewardTokens
     for (let j = 0; j < poolInfo.value7.length; j++) {
       let token = getToken(poolInfo.value7[j])
       let amount = poolInfo.value8[j]
@@ -94,8 +95,9 @@ export function handleRewardContractAdded(event: RewardContractAdded): void {
       rewardToken.farmingPool = farmingPool.id
       rewardToken.priority = j
       rewardToken.save()
-      farmingPool.rewardTokens.push(rewardToken.id)
+      rewardTokens.push(rewardToken.id)
     }
+    farmingPool.rewardTokens = rewardTokens
     let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
     ev.logIndex = event.logIndex
     ev.name = "RewardContractAdded"
@@ -121,6 +123,7 @@ export function handleAddPool(event: AddPool): void {
   farmingPool.pool = poolInfo.value0.toHexString()
   farmingPool.farm = event.address.toHexString()
   farmingPool.rewardTokens = []
+  let rewardTokens = farmingPool.rewardTokens
   for (let i = 0; i < poolInfo.value7.length; i++) {
     let token = getToken(poolInfo.value7[i])
     let amount = poolInfo.value8[i]
@@ -132,8 +135,9 @@ export function handleAddPool(event: AddPool): void {
     rewardToken.farmingPool = farmingPool.id
     rewardToken.priority = i
     rewardToken.save()
-    farmingPool.rewardTokens.push(rewardToken.id)
+    rewardTokens.push(rewardToken.id)
   }
+  farmingPool.rewardTokens = rewardTokens
   // note event info
   let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
   ev.logIndex = event.logIndex
@@ -152,7 +156,7 @@ export function handleRenewPool(event: RenewPool): void {
   if (farmingPool === null) {
     farmingPool = new FarmingPool(event.address.toHexString() + '_' + event.params.pid.toString())
   }
-  farmingPool.rewardTokens = []
+  
   let poolInfo = fairLaunchContract.getPoolInfo(event.params.pid)
   farmingPool.pid = event.params.pid
   farmingPool.startTime = event.params.startTime
@@ -161,7 +165,8 @@ export function handleRenewPool(event: RenewPool): void {
   farmingPool.vestingDuration = event.params.vestingDuration
   farmingPool.pool = poolInfo.value0.toHexString()
   farmingPool.farm = event.address.toHexString()
-
+  farmingPool.rewardTokens = []
+  let rewardTokens = farmingPool.rewardTokens
   for (let i = 0; i < poolInfo.value7.length; i++) {
     let token = getToken(poolInfo.value7[i])
     let amount = poolInfo.value8[i]
@@ -173,8 +178,9 @@ export function handleRenewPool(event: RenewPool): void {
     rewardToken.farmingPool = farmingPool.id
     rewardToken.priority = i
     rewardToken.save()
-    farmingPool.rewardTokens.push(rewardToken.id)
+    rewardTokens.push(rewardToken.id)
   }
+  farmingPool.rewardTokens = rewardTokens
   // note event info
   let ev = new ContractEvent(event.transaction.hash.toHex()+event.logIndex.toString())
   ev.logIndex = event.logIndex
@@ -318,16 +324,20 @@ function handleWithdrawAnyway(nftId: BigInt, transaction: ethereum.Transaction, 
   ev.save() 
 }
 export function handleHarvest(event: Harvest): void {
-  log.info("+++---h 0 {}",[event.transaction.hash.toHexString()])
+    
+  // if (event.block.number.gt(BigInt.fromI32(16249614))) {
+  //   throw Error('VTTTT')
+  // }
+  log.error("+++ tx hash: {}",[event.transaction.hash.toHexString()])
   let decodedValues = DecodeHarvestEvent(event.transaction.input, event.transaction.hash.toHex()).toArray()
   if (decodedValues.length == 0) {
     //TODO: invalid tx
-    log.info("--handleHarvest nfts.length == 0",[])
+    log.error("--handleHarvest nfts.length == 0",[])
     return 
   }
   let nfts = decodedValues[0].toI32Array()
   let pids = decodedValues[1].toI32Array()
-  log.info("+++---h 4: {} {}",[nfts.length.toString(), pids.length.toString()])
+  log.error("+++nfts number: {} , pids number: {}",[nfts.length.toString(), pids.length.toString()])
   let rewardToken = Token.load(event.params.reward.toHexString())!
   // from pid -> FarmingPool -> rewards.length 
   if (nfts.length == 1)  {
@@ -342,36 +352,41 @@ export function handleHarvest(event: Harvest): void {
     positionReward = AggregateReward(rewardToken.id, rewardToken.decimals.toString(), event.params.amount, positionReward)
     positionReward.save()
 
-    log.info("--handleHarvest nfts.length == 1, {}",[nfts[0].toString()])
+    log.error("-- nfts number == 1, nft: {}",[nfts[0].toString()])
   } else {
+    log.error("-- nfts number > 1",[])
     // TODO: there are more than 1 nft emitted from 1 tx -> need to check index of the event inside the tx, to map to nft from []nfts
-    let harvestGroup = HarvestEventGroup.load(event.transaction.hash.toHex())
+    let harvestGroup = HarvestEventGroup.load(event.transaction.hash.toHexString())
     if (harvestGroup == null) {
-      harvestGroup = new HarvestEventGroup(event.transaction.hash.toHex())
+      harvestGroup = new HarvestEventGroup(event.transaction.hash.toHexString())
       harvestGroup.handledEvents = 0
     }
     let assignedNFTIndex = 0 
     let numberOfRewards = 0 
     for (let i=0; i< pids.length; i++) {
-      log.info("+++---h 5: {}",[event.address.toHexString() + "_" + pids[i].toString()])
-      let farmingPool = FarmingPool.load(event.address.toHexString() + "_" + pids[i].toString())
-      if (farmingPool == null) {
-        log.info("+++---h 6: {} null",[event.address.toHexString() + "_" + pids[i].toString()])
-      } else {
-        log.info("+++---h 7: {}",[farmingPool.id])
-        if (farmingPool.rewardTokens == null) {
-          log.info("+++---h 8: no reward tokens recorded ",[])
-        }else {
-          log.info("+++---h 9: ",[])
-        }
-      }
+      // let farmingPool = FarmingPool.load(event.address.toHexString() + "_" + pids[i].toString())
+      // if (farmingPool == null) {
+      //   log.error("+++farm pool null: {}",[event.address.toHexString() + "_" + pids[i].toString()])
+      // } else {
+      //   log.error("+++farm pool id: {}",[farmingPool.id])
+      //   if (farmingPool.rewardTokens == null) {
+      //     log.error("+++farm pool reward tokens number: 0",[])
+      //   }else {
+      //     log.error("+++farm pool reward tokens number: {}",[farmingPool.rewardTokens.length.toString()])
+      //   }
+      // }
       numberOfRewards += FarmingPool.load(event.address.toHexString() + "_" + pids[i].toString())!.rewardTokens.length
+      log.error("+++farm pool reward tokens number: {}, pool: {}",[numberOfRewards.toString(), event.address.toHexString() + "_" + pids[i].toString()])
+      log.error("+++farm pool current harvestGroup handled events: {}",[harvestGroup.handledEvents.toString()])
       if (numberOfRewards > harvestGroup.handledEvents) {
         assignedNFTIndex = i
+        break
       }
     }
+    log.error("+++farm pool assignedNFTIndex: {}",[assignedNFTIndex.toString()])
     let positionID = nfts[assignedNFTIndex]
-    log.info("+++---h 9999: {}",[positionID.toString()])
+    log.error("+++nft id: {}, assignedNFTIndex: {}",[positionID.toString(), assignedNFTIndex.toString()])
+    log.error("+++rewards input id: {}, amount: {} ",[rewardToken.id, event.params.amount.toString()])
     let positionReward = PositionReward.load(positionID.toString())
     if (positionReward == null) {
       positionReward = new PositionReward(positionID.toString())
@@ -386,9 +401,8 @@ export function handleHarvest(event: Harvest): void {
 
 function AggregateReward(inputRewardToken: string, inputRewardTokenDecimals: string, inputRewardAmount: BigInt, positionReward: PositionReward): PositionReward {
   let addNewToken = true
-  log.info("+++---h 10: {}", [positionReward.rewards!])
+  log.error("+++rewards before: {}", [positionReward.rewards!])
   let jsonValues = json.fromString(positionReward.rewards!).toArray()
-  log.info("+++---h 11: {}", [jsonValues.length.toString()])
   let dest = `[`
     for (let i=0; i<jsonValues.length; i++ ) {
         let postionRewardData = jsonValues[i].toObject()
@@ -417,6 +431,7 @@ function AggregateReward(inputRewardToken: string, inputRewardTokenDecimals: str
         dest += buildRewardObject(inputRewardToken, inputRewardTokenDecimals, inputRewardAmount)
     } 
     dest += `]`
+    log.error("+++rewards after: {}", [dest])
     positionReward.rewards = dest
     return positionReward
 }
@@ -465,7 +480,7 @@ function DecodeHarvestEvent(txBytes: Bytes, txHash: string): Value {
       pids.push(pid)
     }
 
-    log.info("+++---h 1: {} {} {} {}", [pid.toString(), nfts.length.toString(), liqs.length.toString(), pids.length.toString()])
+    log.error("+++decode exit: {} {} {} {}", [pid.toString(), nfts.length.toString(), liqs.length.toString(), pids.length.toString()])
     return Value.fromArray([Value.fromI32Array(nfts), Value.fromI32Array(pids)])
   }
 
@@ -492,9 +507,9 @@ function DecodeHarvestEvent(txBytes: Bytes, txHash: string): Value {
         } 
         pids.push(decodedPid.toTuple()[0].toI32Array()[0])
     }
-    log.info("+++---h 2: {} {}", [nfts.length.toString(), pids.length.toString()])
+    log.error("+++decode harvest: {} {}", [nfts.length.toString(), pids.length.toString()])
     return Value.fromArray([Value.fromI32Array(nfts), Value.fromI32Array(pids)])
   }
-  log.info("+++---h 3 invalid tx", [])
+  log.error("+++decode invalid tx", [])
   return Value.fromArray([])
 }

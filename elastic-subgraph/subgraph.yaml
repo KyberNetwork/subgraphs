@@ -4,8 +4,9 @@ repository: https://github.com/KyberNetwork/promm-subgraph
 features:
   - grafting
 # graft:
-#   base: QmTPj7JHrndKyUW3PiFgpjgTXECMpcXiBYGJXL2kjP61Gb # Subgraph ID of base subgraph
-#   block: 16169218 # Block number
+#   base:  # Subgraph ID of base subgraph
+#   block:  # Block number
+
 schema:
   file: ./schema.graphql
 dataSources:
