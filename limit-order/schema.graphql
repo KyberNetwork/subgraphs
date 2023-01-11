@@ -16,6 +16,7 @@ type OrderCancelled @entity {
   orderHash: Bytes!
   remaining: BigInt!
   blockNumber: BigInt!
+  blockTime: BigInt!
   tx: Bytes!
 }
 
@@ -25,6 +26,7 @@ type NonceIncreased @entity {
   oldNonce: BigInt!
   newNonce: BigInt!
   blockNumber: BigInt!
+  blockTime: BigInt!
   tx: Bytes!
 }
 

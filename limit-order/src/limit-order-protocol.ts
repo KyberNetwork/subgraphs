@@ -15,6 +15,7 @@ export function handleNonceIncreased(event: NonceIncreased): void {
   entity.oldNonce = event.params.oldNonce;
   entity.newNonce = event.params.newNonce;
   entity.blockNumber = event.block.number;
+  entity.blockTime = event.block.timestamp;
   entity.tx = event.transaction.hash;
   entity.save();
 }
@@ -26,6 +27,7 @@ export function handleOrderCanceled(event: OrderCanceled): void {
   entity.orderHash = event.params.orderHash;
   entity.remaining = event.params.remainingRaw;
   entity.blockNumber = event.block.number;
+  entity.blockTime = event.block.timestamp;
   entity.tx = event.transaction.hash;
   entity.save();
 }
