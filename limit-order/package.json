@@ -3,6 +3,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
+
     "build-goerli": "graph build --network goerli",
     "build-polygon": "graph build --network matic",
     "build-arbitrum": "graph build --network arbitrum-one",
@@ -10,13 +11,23 @@
     "build-bsc": "graph build --network bsc",
     "build-fantom": "graph build --network fantom",
     "build-optimism": "graph build --network optimism",
-    "deploy-goerli-stg": "graph deploy --network goerli --node https://api.thegraph.com/deploy/ anhvietnguyennva/kyberswap-lo-stg-goerli",
-    "deploy-polygon-stg": "graph deploy --network matic --node https://api.thegraph.com/deploy/ anhvietnguyennva/kyberswap-lo-stg-polygon",
+
     "deploy-arbitrum-stg": "graph deploy --network arbitrum-one --node https://api.thegraph.com/deploy/ anhvietnguyennva/kyberswap-lo-stg-arbitrum",
-    "deploy-avalanche": "graph deploy --network avalanche --node https://api.thegraph.com/deploy/ anhvietnguyennva/kyberswap-lo-stg-avalanche",
-    "deploy-bsc": "graph deploy --network bsc --node https://api.thegraph.com/deploy/ anhvietnguyennva/kyberswap-lo-stg-bsc",
-    "deploy-fantom": "graph deploy --network fantom --node https://api.thegraph.com/deploy/ anhvietnguyennva/kyberswap-lo-stg-fantom",
-    "deploy-optimism": "graph deploy --network optimism --node https://api.thegraph.com/deploy/ anhvietnguyennva/kyberswap-lo-stg-optimism",
+    "deploy-avalanche-stg": "graph deploy --network avalanche --node https://api.thegraph.com/deploy/ anhvietnguyennva/kyberswap-lo-stg-avalanche",
+    "deploy-bsc-stg": "graph deploy --network bsc --node https://api.thegraph.com/deploy/ anhvietnguyennva/kyberswap-lo-stg-bsc",
+    "deploy-fantom-stg": "graph deploy --network fantom --node https://api.thegraph.com/deploy/ anhvietnguyennva/kyberswap-lo-stg-fantom",
+    "deploy-goerli-stg": "graph deploy --network goerli --node https://api.thegraph.com/deploy/ anhvietnguyennva/kyberswap-lo-stg-goerli",
+    "deploy-optimism-stg": "graph deploy --network optimism --node https://api.thegraph.com/deploy/ anhvietnguyennva/kyberswap-lo-stg-optimism",
+    "deploy-polygon-stg": "graph deploy --network matic --node https://api.thegraph.com/deploy/ anhvietnguyennva/kyberswap-lo-stg-polygon",
+
+    "deploy-arbitrum-prod": "graph deploy --network arbitrum-one --node https://api.thegraph.com/deploy/ kybernetwork/kyberswap-limit-order-arbitrum",
+    "deploy-avalanche-prod": "graph deploy --network avalanche --node https://api.thegraph.com/deploy/ kybernetwork/kyberswap-limit-order-avalanche",
+    "deploy-bsc-prod": "graph deploy --network bsc --node https://api.thegraph.com/deploy/ kybernetwork/kyberswap-limit-order-bsc",
+    "deploy-fantom-prod": "graph deploy --network fantom --node https://api.thegraph.com/deploy/ kybernetwork/kyberswap-limit-order-fantom",
+    "deploy-goerli-prod": "graph deploy --network goerli --node https://api.thegraph.com/deploy/ kybernetwork/kyberswap-limit-order-goerli",
+    "deploy-optimism-prod": "graph deploy --network optimism --node https://api.thegraph.com/deploy/ kybernetwork/kyberswap-limit-order-optimism",
+    "deploy-polygon-prod": "graph deploy --network matic --node https://api.thegraph.com/deploy/ kybernetwork/kyberswap-limit-order-polygon",
+
     "create-local": "graph create --node http://localhost:8020/ vuquang23/limit-order-goerli-v7",
     "remove-local": "graph remove --node http://localhost:8020/ vuquang23/limit-order-goerli-v7",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 vuquang23/limit-order-goerli-v8"
