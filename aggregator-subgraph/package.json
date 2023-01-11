@@ -8,7 +8,7 @@
     "codegen": "graph codegen subgraphs/router.thegraph.yaml --output-dir src/types/router",
     "build": "graph build subgraphs/router.thegraph.yaml",
     "create-dev": "graph create kybernetwork/kyberswap-aggregator-${NETWORK:-bsc} --node https://graph.dev.kyberengineering.io/${NETWORK:-bsc}",
-    "deploy-dev": "graph deploy kybernetwork/kyberswap-aggregator-${NETWORK:-bsc} subgraphs/router.thegraph.yaml --ipfs https://ipfs.dev.kyberengineering.io/bsc --node https://graph.dev.kyberengineering.io/bsc",
+    "deploy-dev": "graph deploy kybernetwork/kyberswap-aggregator-${NETWORK:-bsc} subgraphs/router.thegraph.yaml --ipfs https://ipfs.dev.kyberengineering.io/${NETWORK:-bsc} --node https://graph.dev.kyberengineering.io/${NETWORK:-bsc}",
     "deploy": "graph deploy kybernetwork/kyberswap-aggregator-${NETWORK:-ethereum} subgraphs/router.thegraph.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "create-local": "graph create kybernetwork/kyberswap-aggregator-${NETWORK} --node http://127.0.0.1:8020",
     "deploy-local": "graph deploy kybernetwork/kyberswap-aggregator-${NETWORK} subgraphs/router.thegraph.yaml --debug --ipfs http://localhost:5002 --node http://127.0.0.1:8020",
