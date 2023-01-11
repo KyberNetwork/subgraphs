@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: LimitOrderProtocol
-    network: goerli
+    network: optimism
     source:
       abi: LimitOrderProtocol
-      address: "0x611e8e5CB386612312358DFb34b79a3108F87406"
-      startBlock: 8143533
+      address: "0x921c324A2cE0C315B1ec4Ca1Ac6b6E94A8838A7c"
+      startBlock: 63850445
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
