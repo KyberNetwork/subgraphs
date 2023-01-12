@@ -1,0 +1,44 @@
+{
+  "arbitrum-one": {
+    "LimitOrderProtocol": {
+      "address": "0xB3c8F4Aa9bA403EDB6e890E4dA78F8ef7c9FC463",
+      "startBlock": 52111736
+    }
+  },
+  "avalanche": {
+    "LimitOrderProtocol": {
+      "address": "0xB3c8F4Aa9bA403EDB6e890E4dA78F8ef7c9FC463",
+      "startBlock": 24766523
+    }
+  },
+  "bsc": {
+    "LimitOrderProtocol": {
+      "address": "0x851ff96CDEf154496fE5E6c2F54F3bF16e1F2173",
+      "startBlock": 24669508
+    }
+  },
+  "fantom": {
+    "LimitOrderProtocol": {
+      "address": "0xfb35CA04bE494fFDf48F3Afa4fBadF1dfF8Da243",
+      "startBlock": 53540547
+    }
+  },
+  "goerli": {
+    "LimitOrderProtocol": {
+      "address": "0x742dCf793BE8708B524dD37761f7d75f8e80ECad",
+      "startBlock": 8286112
+    }
+  },
+  "optimism": {
+    "LimitOrderProtocol": {
+      "address": "0x921c324A2cE0C315B1ec4Ca1Ac6b6E94A8838A7c",
+      "startBlock": 63850445
+    }
+  },
+  "matic": {
+    "LimitOrderProtocol": {
+      "address": "0xcf250078b2ac5cb5Bd3d4Dce793638B9C24da6c7",
+      "startBlock": 37908159
+    }
+  }
+}

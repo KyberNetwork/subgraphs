@@ -1,0 +1,42 @@
+type OrderFilled @entity {
+  id: ID!
+  taker: Bytes!
+  orderHash: Bytes!
+  remaining: BigInt!
+  makingAmount: BigInt!
+  takingAmount: BigInt!
+  blockNumber: BigInt!
+  blockTime: BigInt!
+  tx: Bytes!
+}
+
+type OrderCancelled @entity {
+  id: ID!
+  maker: Bytes!
+  orderHash: Bytes!
+  remaining: BigInt!
+  blockNumber: BigInt!
+  blockTime: BigInt!
+  tx: Bytes!
+}
+
+type NonceIncreased @entity {
+  id: ID!
+  maker: Bytes!
+  oldNonce: BigInt!
+  newNonce: BigInt!
+  blockNumber: BigInt!
+  blockTime: BigInt!
+  tx: Bytes!
+}
+
+type OrderFilledRFQ @entity {
+  id: ID!
+  taker: Bytes!
+  orderHash: Bytes!
+  makingAmount: BigInt!
+  takingAmount: BigInt!
+  blockNumber: BigInt!
+  blockTime: BigInt!
+  tx: Bytes!
+}
